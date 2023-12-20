@@ -8,7 +8,7 @@ type {{.GoIdent.GoName}}Protos []*{{.GoIdent.GoName}}
 type {{ .Model.Name }} struct {
 	{{- range .Model.Fields }}
     {{ if .ShouldGenerateBelongsToIdField }}
-    {{ .Options.GetBelongsTo.Foreignkey }} *string {{ emptyTag }}
+    {{ .Options.GetBelongsTo.Foreignkey }} *uint64 {{ emptyTag }}
     {{ end }}
     {{ .Comments -}}
     {{ .GoName }} {{ .ModelType }} {{ .Tag -}}
@@ -177,9 +177,9 @@ func (p *{{.GoIdent.GoName}}) ToModel() (theModel *{{ .Model.Name }}, err error)
     // if the object is present, the object's id overrides the existing id field value
     if p.{{ .GoName }} != nil {
 	  {{ if .Options.BelongsTo.Foreignkey -}}
-      theModel.{{ .Options.BelongsTo.Foreignkey }} = p.{{ .GoName }}.Id
+      theModel.{{ .Options.BelongsTo.Foreignkey }} = &p.{{ .GoName }}.Sid
       {{ else }}
-      theModel.{{ .GoName }}Id = p.{{ .GoName }}.Id
+      theModel.{{ .GoName }}Id = &p.{{ .GoName }}.Sid
       {{ end -}}
 	}
     {{ end }}
@@ -225,18 +225,16 @@ func (p *{{.GoIdent.GoName}}) ToModel() (theModel *{{ .Model.Name }}, err error)
 }
 
 func (m {{ .Model.Name }}s) GetByModelIds(ctx context.Context, tx *gorm.DB, preloads ...string) (err error) {
-	ids := []string{}
+	ids := []uint64{}
 	for _, model := range m {
-		if model.Id != nil {
-			ids = append(ids, *model.Id)
-		}
+		ids = append(ids, model.Sid)
 	}
 	if len(ids) > 0 {
 		statement := tx.Preload(clause.Associations)
 		for _, preload := range preloads {
 			statement = statement.Preload(preload)
 		}
-		err = statement.Where("id in ?", ids).Find(&m).Error
+		err = statement.Where("sid in ?", ids).Find(&m).Error
 	}
 	return
 }
@@ -245,11 +243,6 @@ func (m {{ .Model.Name }}s) GetByModelIds(ctx context.Context, tx *gorm.DB, prel
 // use gorm's association mode functions to update associations as you see fit after calling upsert. See https://gorm.io/docs/associations.html#Replace-Associations
 func (p *{{.GoIdent.GoName}}Protos) Upsert(ctx context.Context, tx *gorm.DB) (models {{ .Model.Name }}s, err error) {
 	if p != nil {
-		for _, proto := range *p {
-			if proto.Id == nil {
-				proto.Id = lo.ToPtr(uuid.New().String())
-			}
-		}
 		models, err = p.ToModels()
 		if err != nil {
 			return
@@ -297,7 +290,7 @@ func (p *{{.GoIdent.GoName}}Protos) GetByIds(ctx context.Context, tx *gorm.DB, i
 		for _, preload := range preloads {
 		  statement = statement.Preload(preload)
 		}
-		if err = statement.Where("id in ?", ids).Find(&models).Error; err != nil {
+		if err = statement.Where("sid in ?", ids).Find(&models).Error; err != nil {
 		  return
 		}
 		if len(models) > 0 {
@@ -310,7 +303,7 @@ func (p *{{.GoIdent.GoName}}Protos) GetByIds(ctx context.Context, tx *gorm.DB, i
 }
 
 func Delete{{ .Model.Name }}s(ctx context.Context, tx *gorm.DB, ids []string) error {
-    statement := tx.Where("id in ?", ids)
+    statement := tx.Where("sid in ?", ids)
 	return statement.Delete(&{{ .Model.Name }}{}).Error	
 }
 `))

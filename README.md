@@ -13,7 +13,7 @@ Json tags are generated using the json name so that json marshalling will always
 ### Model Types
 Fields of type `google.protobuf.Timestamp` are generated as `*time.Time` and the generated gorm tag is `gorm:"default:now()`
 
-Fields named `Id` in any case are treated as primary keys and the generated gorm tag is `gorm:"type:uuid;primaryKey;default:gen_random_uuid();"`
+Fields named `Id` in any case are treated as primary keys and the generated gorm tag is `gorm:"primaryKey;"`
 
 Primitive repeated types use their `pq` type: `pq.Float64Array`, `pq.Float32Array`, `pq.Int32Array`, `pq.Int64Array`, `pq.StringArray`, `pq.ByteaArray`
 

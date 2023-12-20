@@ -9,7 +9,6 @@ plugins:
     opt:
       - paths=source_relative
       - enums_as_ints=true
-      - engine=postgres
   - plugin: buf.build/community/mitchellh-go-json:v1.1.0
     out: example
     opt:

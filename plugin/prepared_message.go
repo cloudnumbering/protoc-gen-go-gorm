@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+
 	gorm "github.com/catalystsquad/protoc-gen-go-gorm/options"
 	"github.com/stoewer/go-strcase"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -27,10 +28,9 @@ func (pm *PreparedMessage) Parse() (err error) {
 	if pm.Ignore {
 		return
 	}
-	pm.Engine = *engine
+	pm.Engine = engine
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "context"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "gorm.io/gorm"})
-	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/google/uuid"})
 	g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "gorm.io/gorm/clause"})
 	model := &Model{Message: pm.Message}
 	if err = model.Parse(); err != nil {

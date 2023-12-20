@@ -4,6 +4,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"strings"
+
 	gorm "github.com/catalystsquad/protoc-gen-go-gorm/options"
 	"github.com/gertd/go-pluralize"
 	"github.com/golang/glog"
@@ -12,13 +14,9 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"strings"
 )
 
-var (
-	enumsAsInts = flag.Bool("enums_as_ints", false, "render enums as integers as opposed to strings")
-	engine      = flag.String("engine", "postgres", "database to render templates for, supported engines are 'postgres' and 'cockroachdb'")
-)
+var enumsAsInts = flag.Bool("enums_as_ints", false, "render enums as integers as opposed to strings")
 
 type tplHeader struct {
 	*protogen.File
@@ -29,27 +27,31 @@ type PluginOptions struct {
 	Engine      string
 }
 
-const protoTimestampTypeGoName = "Timestamp"
-const gormModelTimestampType = "time.Time"
-const postgresEngine = "postgres"
-const cockroachdbEngine = "cockroachdb"
+const (
+	protoTimestampTypeGoName = "Timestamp"
+	gormModelTimestampType   = "time.Time"
+	mysqlEngine              = "mysql"
+	engine                   = "mysql" // Hardcoded now only one supported
+)
 
 // I can't find where the constant is for this in protogen, so I'm putting it here.
 const SUPPORTS_OPTIONAL_FIELDS = 1
 
-var pluralizer = pluralize.NewClient()
-var templateFuncs = map[string]any{
-	"protoMessageName":      protoMessageName,
-	"fieldComments":         fieldComments,
-	"gormModelField":        gormModelField,
-	"gormModelToProtoField": gormModelToProtoField,
-	"protoToGormModelField": protoToGormModelField,
-	"fieldGoType":           fieldGoType,
-	"fieldGoIdent":          fieldGoIdent,
-	"gormModelName":         gormModelName,
-	"tableName":             tableName,
-	"emptyTag":              emptyTag,
-}
+var (
+	pluralizer    = pluralize.NewClient()
+	templateFuncs = map[string]any{
+		"protoMessageName":      protoMessageName,
+		"fieldComments":         fieldComments,
+		"gormModelField":        gormModelField,
+		"gormModelToProtoField": gormModelToProtoField,
+		"protoToGormModelField": protoToGormModelField,
+		"fieldGoType":           fieldGoType,
+		"fieldGoIdent":          fieldGoIdent,
+		"gormModelName":         gormModelName,
+		"tableName":             tableName,
+		"emptyTag":              emptyTag,
+	}
+)
 
 var g *protogen.GeneratedFile
 
@@ -147,11 +149,11 @@ func getMessageGormModelField(field *ModelField) (modelField string) {
 }
 
 func getGormModelFieldBelongsToField(field *protogen.Field) (belongsToField string) {
-	return fmt.Sprintf("%s%sId *string `` \n", fieldComments(field), fieldGoName(field))
+	return fmt.Sprintf("%s%sId uint64 `` \n", fieldComments(field), fieldGoName(field))
 }
 
 func getGormModelFieldHasOneField(field *protogen.Field) (belongsToField string) {
-	return fmt.Sprintf("%s%sId *string `` \n", fieldComments(field), fieldGoName(field))
+	return fmt.Sprintf("%s%sId uint64 `` \n", fieldComments(field), fieldGoName(field))
 }
 
 func pointer(field *protogen.Field) string {
@@ -224,20 +226,15 @@ func getFieldTags(field *ModelField) string {
 func getGormFieldTag(field *ModelField) string {
 	tag := "gorm:\""
 	if isIdField(field.Field) {
-		tag += "type:uuid;primaryKey;"
-		if *engine == "postgres" {
-			tag += "default:uuid_generate_v4();"
-		} else {
-			tag += "default:gen_random_uuid();;"
-		}
+		tag += "primaryKey"
 	} else if isTimestamp(field.Field) {
 		tag += "type:timestamp;"
 	} else if isStructPb(field.Field) || hasJsonbOption(field.Field) {
 		tag += fmt.Sprintf("type:jsonb")
 	} else if isRepeated(field.Field) && field.Enum != nil {
-		tag += fmt.Sprintf("type:%s;", repeatedEnumTypeMap[*engine][field.Options.EnumAsString])
+		tag += fmt.Sprintf("type:%s;", repeatedEnumTypeMap[engine][field.Options.EnumAsString])
 	} else if isRepeated(field.Field) && !isMessage(field.Field) {
-		tag += fmt.Sprintf("type:%s;", gormTagTypeMap[*engine][fieldKind(field.Field)])
+		tag += fmt.Sprintf("type:%s;", gormTagTypeMap[engine][fieldKind(field.Field)])
 	}
 	options := getFieldOptions(field.Field)
 	if options != nil {
@@ -271,7 +268,7 @@ func getGormFieldTag(field *ModelField) string {
 }
 
 func isIdField(field *protogen.Field) bool {
-	return strings.ToLower(string(field.Desc.Name())) == "id"
+	return strings.ToLower(string(field.Desc.Name())) == "sid"
 }
 
 func getJsonFieldTag(field *protogen.Field) string {
@@ -437,6 +434,8 @@ var gormTypeMap = map[protoreflect.Kind]string{
 	protoreflect.EnumKind:   "int",
 	protoreflect.Int32Kind:  "int32",
 	protoreflect.Int64Kind:  "int64",
+	protoreflect.Uint32Kind: "uint32",
+	protoreflect.Uint64Kind: "uint64",
 	protoreflect.FloatKind:  "float32",
 	protoreflect.DoubleKind: "float64",
 	protoreflect.StringKind: "string",
@@ -455,7 +454,7 @@ var gormArrayTypeMap = map[protoreflect.Kind]string{
 }
 
 var gormTagTypeMap = map[string]map[protoreflect.Kind]string{
-	cockroachdbEngine: {
+	mysqlEngine: {
 		protoreflect.BoolKind:   "bool[]",
 		protoreflect.EnumKind:   "int[]",
 		protoreflect.Int32Kind:  "int[]",
@@ -465,26 +464,12 @@ var gormTagTypeMap = map[string]map[protoreflect.Kind]string{
 		protoreflect.StringKind: "string[]",
 		protoreflect.BytesKind:  "bytes[]",
 	},
-	postgresEngine: {
-		protoreflect.BoolKind:   "boolean[]",
-		protoreflect.EnumKind:   "smallint[]",
-		protoreflect.Int32Kind:  "integer[]",
-		protoreflect.FloatKind:  "double precision[]",
-		protoreflect.Int64Kind:  "bigint[]",
-		protoreflect.DoubleKind: "double precision[]",
-		protoreflect.StringKind: "text[]",
-		protoreflect.BytesKind:  "bytea[]",
-	},
 }
 
 var repeatedEnumTypeMap = map[string]map[bool]string{
-	cockroachdbEngine: {
+	mysqlEngine: {
 		true:  "string[]",
 		false: "int[]",
-	},
-	postgresEngine: {
-		true:  "text[]",
-		false: "smallint[]",
 	},
 }
 

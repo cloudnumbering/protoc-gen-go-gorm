@@ -4,192 +4,196 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"os"
+	"testing"
+
 	"github.com/brianvoe/gofakeit/v6"
-	. "github.com/catalystsquad/protoc-gen-go-gorm/example/postgres"
+	. "github.com/catalystsquad/protoc-gen-go-gorm/example/mysql"
 	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/orlangure/gnomock"
-	postgres_preset "github.com/orlangure/gnomock/preset/postgres"
+	mysql_preset "github.com/orlangure/gnomock/preset/mysql"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/protobuf/testing/protocmp"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"testing"
 )
 
-var postgresContainer *gnomock.Container
-var postgresDb *gorm.DB
+var (
+	mysqlContainer *gnomock.Container
+	mysqlDb        *gorm.DB
+)
 
-type PostgresPluginSuite struct {
+type MySQLPluginSuite struct {
 	suite.Suite
 }
 
-func TestPostgresPluginSuite(t *testing.T) {
-	suite.Run(t, new(PostgresPluginSuite))
+func TestMySQLPluginSuite(t *testing.T) {
+	suite.Run(t, new(MySQLPluginSuite))
 }
 
 // TestList tests that the list function works as expected
-func (s *PostgresPluginSuite) TestList() {
+func (s *MySQLPluginSuite) TestList() {
 	// create profiles
-	profiles := getPostgresProfiles(s.T(), 3)
+	profiles := getMysqlProfiles(s.T(), 3)
 	profileProtos := ProfileProtos(profiles)
-	_, err := profileProtos.Upsert(context.Background(), postgresDb)
+	_, err := profileProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// list profiles
 	fetchedProfiles := ProfileProtos{}
-	err = fetchedProfiles.List(context.Background(), postgresDb, 10, 0, nil)
+	err = fetchedProfiles.List(context.Background(), mysqlDb, 10, 0, nil)
 	require.NoError(s.T(), err)
 
 	// assert equality, tests are run in parallel so filter down to the ids we know about
 	idsSet := hashset.New()
 	for _, profile := range profileProtos {
-		idsSet.Add(*profile.Id)
+		idsSet.Add(*profile.Sid)
 	}
 	actualProfiles := ProfileProtos{}
 	for _, profile := range fetchedProfiles {
-		if idsSet.Contains(*profile.Id) {
+		if idsSet.Contains(*profile.Sid) {
 			actualProfiles = append(actualProfiles, profile)
 		}
 	}
-	assertPostgresProtosEquality(s.T(), profileProtos, actualProfiles,
+	assertMysqlProtosEquality(s.T(), profileProtos, actualProfiles,
 		protocmp.IgnoreFields(&Profile{}, "created_at", "updated_at"),
 	)
 }
 
 // TestGetByIds tests that the getByIds function works as expected
-func (s *PostgresPluginSuite) TestGetByIds() {
+func (s *MySQLPluginSuite) TestGetByIds() {
 	// create profiles
-	profiles := getPostgresProfiles(s.T(), 3)
+	profiles := getMysqlProfiles(s.T(), 3)
 	profileProtos := ProfileProtos(profiles)
-	_, err := profileProtos.Upsert(context.Background(), postgresDb)
+	_, err := profileProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// get profiles
-	ids := lo.Map(profileProtos, func(item *Profile, index int) string {
-		return *item.Id
+	ids := lo.Map(profileProtos, func(item *Profile, index int) uint64 {
+		return item.Sid
 	})
+
 	fetchedProfiles := ProfileProtos{}
-	err = fetchedProfiles.GetByIds(context.Background(), postgresDb, ids)
+	err = fetchedProfiles.GetByIds(context.Background(), mysqlDb, ids)
 	require.NoError(s.T(), err)
 
 	// assert equality
-	assertPostgresProtosEquality(s.T(), profileProtos, fetchedProfiles,
+	assertMysqlProtosEquality(s.T(), profileProtos, fetchedProfiles,
 		protocmp.IgnoreFields(&Profile{}, "created_at", "updated_at"),
 	)
 }
 
 // TestBase tests that scalar fields are persisted as we expect them to be
-func (s *PostgresPluginSuite) TestBase() {
+func (s *MySQLPluginSuite) TestBase() {
 	// create the user
-	user := getPostgresUser(s.T())
+	user := getMysqlUser(s.T())
 	userProtos := UserProtos{user}
-	_, err := userProtos.Upsert(context.Background(), postgresDb)
+	_, err := userProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// fetch the user
-	fetchedUserModel, err := getPostgresUserById(*user.Id)
+	fetchedUserModel, err := getMysqlUserById(*user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
 
 	// assert equality
-	assertPostgresProtosEquality(s.T(), userProtos[0], fetchedUserProto,
+	assertMysqlProtosEquality(s.T(), userProtos[0], fetchedUserProto,
 		protocmp.IgnoreFields(&User{}, "created_at", "updated_at"),
 	)
 }
 
 // TestHasOneByObject tests that fields related with a has one relationship are persisted as we expect them to be when saved as an object
-func (s *PostgresPluginSuite) TestHasOneByObject() {
+func (s *MySQLPluginSuite) TestHasOneByObject() {
 	// create the user
-	user := getPostgresUser(s.T())
+	user := getMysqlUser(s.T())
 	userProtos := UserProtos{user}
-	_, err := userProtos.Upsert(context.Background(), postgresDb)
+	_, err := userProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 	expectedUser := userProtos[0]
 
 	// create the address
-	address := getPostgresAddress(s.T())
+	address := getMysqlAddress(s.T())
 	address.User = user
 	addressProtos := AddressProtos{address}
-	_, err = addressProtos.Upsert(context.Background(), postgresDb)
+	_, err = addressProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// set the address on the expected proto for comparison
 	expectedUser.Address = addressProtos[0]
 	expectedUser.Address.User = nil
-	expectedUser.Address.UserId = expectedUser.Id
+	expectedUser.Address.UserId = expectedUser.Sid
 
 	// fetch the user
-	fetchedUserModel, err := getPostgresUserById(*user.Id)
+	fetchedUserModel, err := getMysqlUserById(*user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
 
 	// assert equality
-	assertPostgresProtosEquality(s.T(), userProtos[0], fetchedUserProto,
+	assertMysqlProtosEquality(s.T(), userProtos[0], fetchedUserProto,
 		protocmp.IgnoreFields(&User{}, "created_at", "updated_at"),
 		protocmp.IgnoreFields(&Address{}, "created_at", "updated_at"),
 	)
 }
 
 // TestHasOneByObject tests that fields related with a has one relationship are persisted as we expect them to be when saved as an id
-func (s *PostgresPluginSuite) TestHasOneById() {
+func (s *MySQLPluginSuite) TestHasOneById() {
 	// create the user
-	user := getPostgresUser(s.T())
+	user := getMysqlUser(s.T())
 	userProtos := UserProtos{user}
-	_, err := userProtos.Upsert(context.Background(), postgresDb)
+	_, err := userProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 	expectedUser := userProtos[0]
 
 	// create the address
-	address := getPostgresAddress(s.T())
-	address.UserId = user.Id
+	address := getMysqlAddress(s.T())
+	address.UserId = user.Sid
 	addressProtos := AddressProtos{address}
-	_, err = addressProtos.Upsert(context.Background(), postgresDb)
+	_, err = addressProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// set the address on the expected proto for comparison
 	expectedUser.Address = addressProtos[0]
 	expectedUser.Address.User = nil
-	expectedUser.Address.UserId = expectedUser.Id
+	expectedUser.Address.UserId = expectedUser.Sid
 
 	// fetch the user
-	fetchedUserModel, err := getPostgresUserById(*user.Id)
+	fetchedUserModel, err := getMysqlUserById(*user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
 
 	// assert equality
-	assertPostgresProtosEquality(s.T(), userProtos[0], fetchedUserProto,
+	assertMysqlProtosEquality(s.T(), userProtos[0], fetchedUserProto,
 		protocmp.IgnoreFields(&User{}, "created_at", "updated_at"),
 		protocmp.IgnoreFields(&Address{}, "created_at", "updated_at"),
 	)
 }
 
 // TestHasMany tests that fields related with a has many relationship are persisted as we expect them to be
-func (s *PostgresPluginSuite) TestHasMany() {
+func (s *MySQLPluginSuite) TestHasMany() {
 	// create the user
-	user := getPostgresUser(s.T())
+	user := getMysqlUser(s.T())
 	userProtos := UserProtos{user}
-	_, err := userProtos.Upsert(context.Background(), postgresDb)
+	_, err := userProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 	expectedUser := userProtos[0]
 
 	// create comments
-	comments := getPostgresComments(s.T(), 3)
+	comments := getMysqlComments(s.T(), 3)
 	for _, comment := range comments {
 		comment.User = user
 	}
 	commentProtos := CommentProtos(comments)
-	_, err = commentProtos.Upsert(context.Background(), postgresDb)
+	_, err = commentProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// set the comments on the expected proto for comparison
@@ -200,35 +204,35 @@ func (s *PostgresPluginSuite) TestHasMany() {
 	}
 
 	// fetch the user
-	fetchedUserModel, err := getPostgresUserById(*user.Id)
+	fetchedUserModel, err := getMysqlUserById(*user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
 
 	// assert equality
-	assertPostgresProtosEquality(s.T(), userProtos[0], fetchedUserProto,
+	assertMysqlProtosEquality(s.T(), userProtos[0], fetchedUserProto,
 		protocmp.IgnoreFields(&User{}, "created_at", "updated_at"),
 		protocmp.IgnoreFields(&Comment{}, "created_at", "updated_at"),
 	)
 }
 
 // TestManyToMany tests that fields related with a many-to-many relationship are persisted as we expect them to be
-func (s *PostgresPluginSuite) TestManyToMany() {
+func (s *MySQLPluginSuite) TestManyToMany() {
 	// create the user
-	user := getPostgresUser(s.T())
+	user := getMysqlUser(s.T())
 	userProtos := UserProtos{user}
-	_, err := userProtos.Upsert(context.Background(), postgresDb)
+	_, err := userProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 	expectedUser := userProtos[0]
 
 	// create profiles
-	profiles := getPostgresProfiles(s.T(), 3)
+	profiles := getMysqlProfiles(s.T(), 3)
 	profileProtos := ProfileProtos(profiles)
-	_, err = profileProtos.Upsert(context.Background(), postgresDb)
+	_, err = profileProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// associate profiles
-	session := postgresDb.Session(&gorm.Session{})
+	session := mysqlDb.Session(&gorm.Session{})
 	userModel, err := user.ToModel()
 	require.NoError(s.T(), err)
 	profileModels, err := profileProtos.ToModels()
@@ -241,43 +245,43 @@ func (s *PostgresPluginSuite) TestManyToMany() {
 	expectedUser.Profiles = profiles
 
 	// fetch the user
-	fetchedUserModel, err := getPostgresUserById(*user.Id)
+	fetchedUserModel, err := getMysqlUserById(*user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
 
 	// assert equality
-	assertPostgresProtosEquality(s.T(), userProtos[0], fetchedUserProto,
+	assertMysqlProtosEquality(s.T(), userProtos[0], fetchedUserProto,
 		protocmp.IgnoreFields(&User{}, "created_at", "updated_at"),
 		protocmp.IgnoreFields(&Profile{}, "created_at", "updated_at"),
 	)
 }
 
-func (s *PostgresPluginSuite) TestSliceTransformers() {
-	user := getPostgresUser(s.T())
+func (s *MySQLPluginSuite) TestSliceTransformers() {
+	user := getMysqlUser(s.T())
 	users := UserProtos{user}
 	models, err := users.ToModels()
 	require.NoError(s.T(), err)
 	transformedThings, err := models.ToProtos()
 	require.NoError(s.T(), err)
-	assertPostgresProtosEquality(s.T(), users, transformedThings)
+	assertMysqlProtosEquality(s.T(), users, transformedThings)
 }
 
-func (s *PostgresPluginSuite) SetupSuite() {
+func (s *MySQLPluginSuite) SetupSuite() {
 	s.T().Parallel()
-	preset := postgres_preset.Preset(
-		postgres_preset.WithUser("test", "test"),
-		postgres_preset.WithDatabase("test"),
-		postgres_preset.WithQueriesFile("postgres_queries.sql"))
+	preset := mysql_preset.Preset(
+		mysql_preset.WithUser("test", "test"),
+		mysql_preset.WithDatabase("test"),
+	)
 	var err error
 	portOpt := gnomock.WithCustomNamedPorts(gnomock.NamedPorts{"default": gnomock.Port{
 		Protocol: "tcp",
 		Port:     5432,
 		HostPort: 5432,
 	}})
-	postgresContainer, err = gnomock.Start(preset, portOpt)
+	mysqlContainer, err = gnomock.Start(preset, portOpt)
 	require.NoError(s.T(), err)
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", postgresContainer.Host, postgresContainer.DefaultPort(), "test", "test", "test", "disable")
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", mysqlContainer.Host, mysqlContainer.DefaultPort(), "test", "test", "test", "disable")
 	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
@@ -286,20 +290,20 @@ func (s *PostgresPluginSuite) SetupSuite() {
 			Colorful:                  true,        // Disable color
 		},
 	)
-	postgresDb, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger})
+	mysqlDb, err = gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger})
 	require.NoError(s.T(), err)
-	err = postgresDb.AutoMigrate(&UserGormModel{}, &AddressGormModel{}, &CommentGormModel{})
+	err = mysqlDb.AutoMigrate(&UserGormModel{}, &AddressGormModel{}, &CommentGormModel{})
 	require.NoError(s.T(), err)
 }
 
-func (s *PostgresPluginSuite) TearDownSuite() {
-	require.NoError(s.T(), gnomock.Stop(postgresContainer))
+func (s *MySQLPluginSuite) TearDownSuite() {
+	require.NoError(s.T(), gnomock.Stop(mysqlContainer))
 }
 
-func (s *PostgresPluginSuite) SetupTest() {
+func (s *MySQLPluginSuite) SetupTest() {
 }
 
-func assertPostgresProtosEquality(t *testing.T, expected, actual interface{}, opts ...cmp.Option) {
+func assertMysqlProtosEquality(t *testing.T, expected, actual interface{}, opts ...cmp.Option) {
 	// ignoring id, created_at, updated_at, user_id because the original proto doesn't have those, but the
 	// one converted from the created model does
 	defaultOpts := []cmp.Option{
@@ -329,7 +333,7 @@ func assertPostgresProtosEquality(t *testing.T, expected, actual interface{}, op
 	)
 }
 
-func getPostgresUser(t *testing.T) (thing *User) {
+func getMysqlUser(t *testing.T) (thing *User) {
 	thing = &User{}
 	err := gofakeit.Struct(&thing)
 	require.NoError(t, err)
@@ -341,11 +345,11 @@ func getPostgresUser(t *testing.T) (thing *User) {
 	return
 }
 
-func getRandomNumPostgresComments(t *testing.T) []*Comment {
-	return getPostgresComments(t, gofakeit.Number(2, 10))
+func getRandomNumMysqlComments(t *testing.T) []*Comment {
+	return getMysqlComments(t, gofakeit.Number(2, 10))
 }
 
-func getPostgresComments(t *testing.T, num int) []*Comment {
+func getMysqlComments(t *testing.T, num int) []*Comment {
 	comments := []*Comment{}
 	for i := 0; i < num; i++ {
 		var comment *Comment
@@ -356,11 +360,11 @@ func getPostgresComments(t *testing.T, num int) []*Comment {
 	return comments
 }
 
-func getRandomNumPostgresProfiles(t *testing.T) []*Profile {
-	return getPostgresProfiles(t, gofakeit.Number(2, 10))
+func getRandomNumMysqlProfiles(t *testing.T) []*Profile {
+	return getMysqlProfiles(t, gofakeit.Number(2, 10))
 }
 
-func getPostgresProfiles(t *testing.T, num int) []*Profile {
+func getMysqlProfiles(t *testing.T, num int) []*Profile {
 	profiles := []*Profile{}
 	for i := 0; i < num; i++ {
 		var profile *Profile
@@ -371,35 +375,35 @@ func getPostgresProfiles(t *testing.T, num int) []*Profile {
 	return profiles
 }
 
-func getRandomNumPostgresCompanys(t *testing.T) []*Company {
-	return getPostgresCompanys(t, gofakeit.Number(2, 10))
+func getRandomNumMysqlCompanys(t *testing.T) []*Company {
+	return getMysqlCompanys(t, gofakeit.Number(2, 10))
 }
 
-func getPostgresCompanys(t *testing.T, num int) []*Company {
+func getMysqlCompanys(t *testing.T, num int) []*Company {
 	companys := []*Company{}
 	for i := 0; i < num; i++ {
-		companys = append(companys, getPostgresCompany(t))
+		companys = append(companys, getMysqlCompany(t))
 	}
 	return companys
 }
 
-func getPostgresCompany(t *testing.T) *Company {
+func getMysqlCompany(t *testing.T) *Company {
 	var company *Company
 	err := gofakeit.Struct(&company)
 	require.NoError(t, err)
 	return company
 }
 
-func getPostgresAddress(t *testing.T) *Address {
+func getMysqlAddress(t *testing.T) *Address {
 	var address *Address
 	err := gofakeit.Struct(&address)
 	require.NoError(t, err)
-	address.CompanyBlob = getPostgresCompany(t)
+	address.CompanyBlob = getMysqlCompany(t)
 	return address
 }
 
-func getPostgresUserById(id string) (*UserGormModel, error) {
-	session := postgresDb.Session(&gorm.Session{})
+func getMysqlUserById(id string) (*UserGormModel, error) {
+	session := mysqlDb.Session(&gorm.Session{})
 	var user *UserGormModel
 	err := session.Preload(clause.Associations).First(&user, "id = ?", id).Error
 	return user, err
