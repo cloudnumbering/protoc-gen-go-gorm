@@ -149,11 +149,11 @@ func getMessageGormModelField(field *ModelField) (modelField string) {
 }
 
 func getGormModelFieldBelongsToField(field *protogen.Field) (belongsToField string) {
-	return fmt.Sprintf("%s%sId uint64 `` \n", fieldComments(field), fieldGoName(field))
+	return fmt.Sprintf("%s%sId string `` \n", fieldComments(field), fieldGoName(field))
 }
 
 func getGormModelFieldHasOneField(field *protogen.Field) (belongsToField string) {
-	return fmt.Sprintf("%s%sId uint64 `` \n", fieldComments(field), fieldGoName(field))
+	return fmt.Sprintf("%s%sId string `` \n", fieldComments(field), fieldGoName(field))
 }
 
 func pointer(field *protogen.Field) string {

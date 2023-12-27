@@ -8,7 +8,7 @@ type {{.GoIdent.GoName}}Protos []*{{.GoIdent.GoName}}
 type {{ .Model.Name }} struct {
 	{{- range .Model.Fields }}
     {{ if .ShouldGenerateBelongsToIdField }}
-    {{ .Options.GetBelongsTo.Foreignkey }} *uint64 {{ emptyTag }}
+    {{ .Options.GetBelongsTo.Foreignkey }} *string {{ emptyTag }}
     {{ end }}
     {{ .Comments -}}
     {{ .GoName }} {{ .ModelType }} {{ .Tag -}}
@@ -225,7 +225,7 @@ func (p *{{.GoIdent.GoName}}) ToModel() (theModel *{{ .Model.Name }}, err error)
 }
 
 func (m {{ .Model.Name }}s) GetByModelIds(ctx context.Context, tx *gorm.DB, preloads ...string) (err error) {
-	ids := []uint64{}
+	ids := []string{}
 	for _, model := range m {
 		ids = append(ids, model.Sid)
 	}

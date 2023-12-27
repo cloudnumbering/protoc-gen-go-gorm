@@ -24,7 +24,7 @@ enum EnumOne {
 message User {
   option (gorm.opts) = {ormable: true,};
   // @gotags: fake:"skip"
-  uint64 sid = 1;
+  string sid = 1;
   // @gotags: fake:"skip"
   string created_at = 2;
   // @gotags: fake:"skip"
@@ -64,11 +64,11 @@ message User {
   // @gotags: fake:"skip"
   Company company = 36 [(gorm.field).belongs_to = {}, (gorm.field).on_delete = "CASCADE"];
   // @gotags: fake:"skip"
-  optional uint64 company_two_id = 37;
+  optional string company_two_id = 37;
   // @gotags: fake:"skip"
   Company company_two = 38 [(gorm.field).belongs_to = {}, (gorm.field).on_delete = "CASCADE"];
   // @gotags: fake:"skip"
-  optional uint64 an_unexpected_id = 39;
+  optional string an_unexpected_id = 39;
   // @gotags: fake:"skip"
   Company company_three = 40 [(gorm.field).belongs_to = {foreignkey: "AnUnexpectedId"}, (gorm.field).on_delete = "CASCADE"];
   // @gotags: fake:"skip"
@@ -96,7 +96,7 @@ message User {
 message Company {
   option (gorm.opts) = {ormable: true,};
   // @gotags: fake:"skip"
-  uint64 sid = 1;
+  string sid = 1;
   // @gotags: fake:"skip"
   google.protobuf.Timestamp created_at = 2;
   // @gotags: fake:"skip"
@@ -107,7 +107,7 @@ message Company {
 message Address {
   option (gorm.opts) = {ormable: true,};
   // @gotags: fake:"skip"
-  uint64 sid = 1;
+  string sid = 1;
   // @gotags: fake:"skip"
   google.protobuf.Timestamp created_at = 2;
   // @gotags: fake:"skip"
@@ -115,7 +115,7 @@ message Address {
   // @gotags: fake:"{name}"
   string name = 4;
   // @gotags: fake:"skip"
-  optional uint64 user_id = 5;
+  optional string user_id = 5;
   // @gotags: fake:"skip"
   User user = 6 [(gorm.field).belongs_to = {}, (gorm.field).on_delete = "CASCADE"];
   // @gotags: fake:"skip"
@@ -125,7 +125,7 @@ message Address {
 message Comment {
   option (gorm.opts) = {ormable: true,};
   // @gotags: fake:"skip"
-  uint64 sid = 1;
+  string sid = 1;
   // @gotags: fake:"skip"
   google.protobuf.Timestamp created_at = 2;
   // @gotags: fake:"skip"
@@ -139,7 +139,7 @@ message Comment {
 message Profile {
   option (gorm.opts) = {ormable: true,};
   // @gotags: fake:"skip"
-  uint64 sid = 1;
+  string sid = 1;
   // @gotags: fake:"skip"
   google.protobuf.Timestamp created_at = 2;
   // @gotags: fake:"skip"

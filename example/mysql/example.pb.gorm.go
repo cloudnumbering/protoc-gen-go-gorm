@@ -20,7 +20,7 @@ type UserProtos []*User
 type UserGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid uint64 `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -76,19 +76,19 @@ type UserGormModel struct {
 	// @gotags: fake:"skip"
 	AStructpb gorm_jsonb.JSONB `gorm:"type:jsonb" json:"aStructpb" fake:"skip"`
 
-	CompanyId *uint64 ``
+	CompanyId *string ``
 
 	// @gotags: fake:"skip"
 	Company *CompanyGormModel `gorm:"foreignKey:CompanyId;references:Id;constraint:OnDelete:CASCADE;" json:"company" fake:"skip"`
 
 	// @gotags: fake:"skip"
-	CompanyTwoId *uint64 `json:"companyTwoId" fake:"skip"`
+	CompanyTwoId *string `json:"companyTwoId" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CompanyTwo *CompanyGormModel `gorm:"foreignKey:CompanyTwoId;references:Id;constraint:OnDelete:CASCADE;" json:"companyTwo" fake:"skip"`
 
 	// @gotags: fake:"skip"
-	AnUnexpectedId *uint64 `json:"anUnexpectedId" fake:"skip"`
+	AnUnexpectedId *string `json:"anUnexpectedId" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CompanyThree *CompanyGormModel `gorm:"foreignKey:AnUnexpectedId;references:Id;constraint:OnDelete:CASCADE;" json:"companyThree" fake:"skip"`
@@ -448,7 +448,7 @@ func (p *User) ToModel() (theModel *UserGormModel, err error) {
 }
 
 func (m UserGormModels) GetByModelIds(ctx context.Context, tx *gorm.DB, preloads ...string) (err error) {
-	ids := []uint64{}
+	ids := []string{}
 	for _, model := range m {
 		ids = append(ids, model.Sid)
 	}
@@ -535,7 +535,7 @@ type CompanyProtos []*Company
 type CompanyGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid uint64 `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -618,7 +618,7 @@ func (p *Company) ToModel() (theModel *CompanyGormModel, err error) {
 }
 
 func (m CompanyGormModels) GetByModelIds(ctx context.Context, tx *gorm.DB, preloads ...string) (err error) {
-	ids := []uint64{}
+	ids := []string{}
 	for _, model := range m {
 		ids = append(ids, model.Sid)
 	}
@@ -705,7 +705,7 @@ type AddressProtos []*Address
 type AddressGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid uint64 `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -717,7 +717,7 @@ type AddressGormModel struct {
 	Name string `json:"name" fake:"{name}"`
 
 	// @gotags: fake:"skip"
-	UserId *uint64 `json:"userId" fake:"skip"`
+	UserId *string `json:"userId" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	User *UserGormModel `gorm:"foreignKey:UserId;references:Id;constraint:OnDelete:CASCADE;" json:"user" fake:"skip"`
@@ -834,7 +834,7 @@ func (p *Address) ToModel() (theModel *AddressGormModel, err error) {
 }
 
 func (m AddressGormModels) GetByModelIds(ctx context.Context, tx *gorm.DB, preloads ...string) (err error) {
-	ids := []uint64{}
+	ids := []string{}
 	for _, model := range m {
 		ids = append(ids, model.Sid)
 	}
@@ -921,7 +921,7 @@ type CommentProtos []*Comment
 type CommentGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid uint64 `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -932,7 +932,7 @@ type CommentGormModel struct {
 	// @gotags: fake:"{name}"
 	Name string `json:"name" fake:"{name}"`
 
-	UserId *uint64 ``
+	UserId *string ``
 
 	// @gotags: fake:"skip"
 	User *UserGormModel `gorm:"foreignKey:UserId;references:Id;constraint:OnDelete:CASCADE;" json:"user" fake:"skip"`
@@ -1022,7 +1022,7 @@ func (p *Comment) ToModel() (theModel *CommentGormModel, err error) {
 }
 
 func (m CommentGormModels) GetByModelIds(ctx context.Context, tx *gorm.DB, preloads ...string) (err error) {
-	ids := []uint64{}
+	ids := []string{}
 	for _, model := range m {
 		ids = append(ids, model.Sid)
 	}
@@ -1109,7 +1109,7 @@ type ProfileProtos []*Profile
 type ProfileGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid uint64 `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -1192,7 +1192,7 @@ func (p *Profile) ToModel() (theModel *ProfileGormModel, err error) {
 }
 
 func (m ProfileGormModels) GetByModelIds(ctx context.Context, tx *gorm.DB, preloads ...string) (err error) {
-	ids := []uint64{}
+	ids := []string{}
 	for _, model := range m {
 		ids = append(ids, model.Sid)
 	}

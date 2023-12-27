@@ -54,11 +54,11 @@ func (s *MySQLPluginSuite) TestList() {
 	// assert equality, tests are run in parallel so filter down to the ids we know about
 	idsSet := hashset.New()
 	for _, profile := range profileProtos {
-		idsSet.Add(*profile.Sid)
+		idsSet.Add(profile.Sid)
 	}
 	actualProfiles := ProfileProtos{}
 	for _, profile := range fetchedProfiles {
-		if idsSet.Contains(*profile.Sid) {
+		if idsSet.Contains(profile.Sid) {
 			actualProfiles = append(actualProfiles, profile)
 		}
 	}
@@ -76,7 +76,7 @@ func (s *MySQLPluginSuite) TestGetByIds() {
 	require.NoError(s.T(), err)
 
 	// get profiles
-	ids := lo.Map(profileProtos, func(item *Profile, index int) uint64 {
+	ids := lo.Map(profileProtos, func(item *Profile, index int) string {
 		return item.Sid
 	})
 
@@ -99,7 +99,7 @@ func (s *MySQLPluginSuite) TestBase() {
 	require.NoError(s.T(), err)
 
 	// fetch the user
-	fetchedUserModel, err := getMysqlUserById(*user.Sid)
+	fetchedUserModel, err := getMysqlUserById(user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
@@ -129,10 +129,10 @@ func (s *MySQLPluginSuite) TestHasOneByObject() {
 	// set the address on the expected proto for comparison
 	expectedUser.Address = addressProtos[0]
 	expectedUser.Address.User = nil
-	expectedUser.Address.UserId = expectedUser.Sid
+	expectedUser.Address.UserId = &expectedUser.Sid
 
 	// fetch the user
-	fetchedUserModel, err := getMysqlUserById(*user.Sid)
+	fetchedUserModel, err := getMysqlUserById(user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
@@ -155,7 +155,7 @@ func (s *MySQLPluginSuite) TestHasOneById() {
 
 	// create the address
 	address := getMysqlAddress(s.T())
-	address.UserId = user.Sid
+	address.UserId = &user.Sid
 	addressProtos := AddressProtos{address}
 	_, err = addressProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
@@ -163,10 +163,10 @@ func (s *MySQLPluginSuite) TestHasOneById() {
 	// set the address on the expected proto for comparison
 	expectedUser.Address = addressProtos[0]
 	expectedUser.Address.User = nil
-	expectedUser.Address.UserId = expectedUser.Sid
+	expectedUser.Address.UserId = &expectedUser.Sid
 
 	// fetch the user
-	fetchedUserModel, err := getMysqlUserById(*user.Sid)
+	fetchedUserModel, err := getMysqlUserById(user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
@@ -204,7 +204,7 @@ func (s *MySQLPluginSuite) TestHasMany() {
 	}
 
 	// fetch the user
-	fetchedUserModel, err := getMysqlUserById(*user.Sid)
+	fetchedUserModel, err := getMysqlUserById(user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
@@ -245,7 +245,7 @@ func (s *MySQLPluginSuite) TestManyToMany() {
 	expectedUser.Profiles = profiles
 
 	// fetch the user
-	fetchedUserModel, err := getMysqlUserById(*user.Sid)
+	fetchedUserModel, err := getMysqlUserById(user.Sid)
 	require.NoError(s.T(), err)
 	fetchedUserProto, err := fetchedUserModel.ToProto()
 	require.NoError(s.T(), err)
