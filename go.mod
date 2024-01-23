@@ -1,10 +1,11 @@
-module github.com/catalystsquad/protoc-gen-go-gorm
+module github.com/cloudnumbering/protoc-gen-go-gorm
 
 go 1.20
 
 require (
 	github.com/brianvoe/gofakeit/v6 v6.21.0
 	github.com/catalystsquad/app-utils-go v1.0.7
+	github.com/catalystsquad/protoc-gen-go-gorm v1.0.2
 	github.com/dariubs/gorm-jsonb v0.1.5
 	github.com/emirpasic/gods v1.18.1
 	github.com/gertd/go-pluralize v0.2.1
@@ -21,7 +22,6 @@ require (
 )
 
 require (
-	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/distribution v2.8.0+incompatible // indirect

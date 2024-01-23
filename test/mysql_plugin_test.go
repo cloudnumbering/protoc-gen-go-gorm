@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
-	. "github.com/catalystsquad/protoc-gen-go-gorm/example/mysql"
+	. "github.com/cloudnumbering/protoc-gen-go-gorm/example/mysql"
 	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
