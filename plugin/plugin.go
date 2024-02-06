@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	gorm "github.com/catalystsquad/protoc-gen-go-gorm/options"
+	gorm "github.com/cloudnumbering/protoc-gen-go-gorm/options"
 	"github.com/gertd/go-pluralize"
 	"github.com/golang/glog"
 	"github.com/stoewer/go-strcase"

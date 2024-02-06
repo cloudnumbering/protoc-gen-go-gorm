@@ -3,7 +3,7 @@ package plugin
 import (
 	"fmt"
 
-	gorm "github.com/catalystsquad/protoc-gen-go-gorm/options"
+	gorm "github.com/cloudnumbering/protoc-gen-go-gorm/options"
 	"github.com/stoewer/go-strcase"
 	"google.golang.org/protobuf/compiler/protogen"
 )

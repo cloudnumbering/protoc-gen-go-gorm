@@ -1,6 +1,6 @@
 # https://docs.buf.build/lint-usage/
 version: v1
-name: github.com/catalystsquad/protoc-gen-go-gorm
+name: github.com/cloudnumbering/protoc-gen-go-gorm
 lint:
   use:
     - DEFAULT
@@ -9,9 +9,9 @@ lint:
     - google
   ignore_only:
     PACKAGE_DIRECTORY_MATCH:
-    - options
+      - options
     PACKAGE_VERSION_SUFFIX:
-    - options
+      - options
 breaking:
   use:
     - FILE
