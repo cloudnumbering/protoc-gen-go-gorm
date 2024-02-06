@@ -224,6 +224,10 @@ func getFieldTags(field *ModelField) string {
 }
 
 func getGormFieldTag(field *ModelField) string {
+	if field.Options.GormTag != "" {
+		return fmt.Sprintf("gorm:\"%s\"", field.Options.GormTag)
+	}
+
 	tag := "gorm:\""
 	if isIdField(field.Field) {
 		tag += "primaryKey"
@@ -263,6 +267,7 @@ func getGormFieldTag(field *ModelField) string {
 				}
 			}
 		}
+
 	}
 	return tag + "\""
 }
@@ -567,6 +572,7 @@ func getFieldOptions(field *protogen.Field) *gorm.GormFieldOptions {
 		// return empty options
 		return &gorm.GormFieldOptions{}
 	}
+
 	if opts.GetBelongsTo() != nil && opts.GetBelongsTo().Foreignkey == "" {
 		opts.GetBelongsTo().Foreignkey = fmt.Sprintf("%sId", field.GoName)
 	}
