@@ -579,7 +579,7 @@ func getFieldOptions(field *protogen.Field) *gorm.GormFieldOptions {
 	}
 
 	if opts.GetBelongsTo() != nil && opts.GetBelongsTo().Foreignkey == "" {
-		opts.GetBelongsTo().Foreignkey = fmt.Sprintf("%sId", field.GoName)
+		opts.GetBelongsTo().Foreignkey = fmt.Sprintf("%sSid", field.GoName)
 	}
 	return opts
 }
@@ -598,7 +598,7 @@ func emptyTag() string {
 
 func getForeignKeyTag(field *ModelField) string {
 	fkTemplate := "foreignKey:%s;"
-	fkIdTemplate := "%sId"
+	fkIdTemplate := "%sSid"
 	hasOne := field.Options.GetHasOne()
 	hasMany := field.Options.GetHasMany()
 	belongsTo := field.Options.GetBelongsTo()
@@ -625,7 +625,7 @@ func getForeignKeyTag(field *ModelField) string {
 		if manyToMany.Foreignkey != "" {
 			return fmt.Sprintf(fkTemplate, manyToMany.Foreignkey)
 		} else {
-			return fmt.Sprintf(fkTemplate, "Id")
+			return fmt.Sprintf(fkTemplate, "sid")
 		}
 	}
 	return ""
@@ -633,7 +633,7 @@ func getForeignKeyTag(field *ModelField) string {
 
 func getReferencesTag(field *ModelField) string {
 	referencesTemplate := "references:%s;"
-	idReferenceTemplate := "%sId"
+	idReferenceTemplate := "%sSid"
 	hasOne := field.Options.GetHasOne()
 	hasMany := field.Options.GetHasMany()
 	belongsTo := field.Options.GetBelongsTo()
@@ -652,7 +652,7 @@ func getReferencesTag(field *ModelField) string {
 		if belongsTo.AssociationForeignkey != "" {
 			return fmt.Sprintf(referencesTemplate, belongsTo.AssociationForeignkey)
 		} else {
-			return fmt.Sprintf(referencesTemplate, "Id")
+			return fmt.Sprintf(referencesTemplate, "sid")
 		}
 	} else if manyToMany != nil {
 		if manyToMany.AssociationForeignkey != "" {
@@ -674,7 +674,7 @@ func getM2MTag(field *ModelField) string {
 func getJoinForeignKeyTag(field *ModelField) string {
 	foreignKey := field.Options.GetManyToMany().JointableForeignkey
 	if foreignKey == "" {
-		foreignKey = fmt.Sprintf("%sId", field.Parent.GoIdent.GoName)
+		foreignKey = fmt.Sprintf("%sSid", field.Parent.GoIdent.GoName)
 	}
 	return fmt.Sprintf("joinForeignKey:%s;", foreignKey)
 }
@@ -682,7 +682,7 @@ func getJoinForeignKeyTag(field *ModelField) string {
 func getJoinReferencesTag(field *ModelField) string {
 	foreignKey := field.Options.GetManyToMany().JointableForeignkey
 	if foreignKey == "" {
-		foreignKey = fmt.Sprintf("%sId", field.Message.GoIdent.GoName)
+		foreignKey = fmt.Sprintf("%sSid", field.Message.GoIdent.GoName)
 	}
 	return fmt.Sprintf("joinReferences:%s;", foreignKey)
 }
