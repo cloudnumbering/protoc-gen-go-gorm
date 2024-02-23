@@ -50,6 +50,7 @@ var (
 		"gormModelName":         gormModelName,
 		"tableName":             tableName,
 		"emptyTag":              emptyTag,
+		"sizeTag":               sizeTag,
 	}
 )
 
@@ -235,7 +236,7 @@ func getGormFieldTag(field *ModelField) string {
 
 	tag := "gorm:\""
 	if isIdField(field.Field) {
-		tag += "primaryKey"
+		tag += "primaryKey;size:34"
 	} else if isTimestamp(field.Field) {
 		tag += "type:timestamp;"
 	} else if isStructPb(field.Field) || hasJsonbOption(field.Field) {
@@ -594,6 +595,10 @@ func tableName(message *protogen.Message) string {
 
 func emptyTag() string {
 	return "``"
+}
+
+func sizeTag() string {
+	return "`gorm:\"size:34\"`"
 }
 
 func getForeignKeyTag(field *ModelField) string {

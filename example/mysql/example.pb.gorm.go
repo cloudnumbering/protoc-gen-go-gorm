@@ -20,7 +20,7 @@ type UserProtos []*User
 type UserGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey;size:34" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -76,7 +76,7 @@ type UserGormModel struct {
 	// @gotags: fake:"skip"
 	AStructpb gorm_jsonb.JSONB `gorm:"type:jsonb" json:"aStructpb" fake:"skip"`
 
-	CompanySid *string ``
+	CompanySid *string `gorm:"size:34"`
 
 	// @gotags: fake:"skip"
 	Company *CompanyGormModel `gorm:"foreignKey:CompanySid;references:sid;constraint:OnDelete:CASCADE;" json:"company" fake:"skip"`
@@ -84,7 +84,7 @@ type UserGormModel struct {
 	// @gotags: fake:"skip"
 	CompanyTwoId *string `json:"companyTwoId" fake:"skip"`
 
-	CompanyTwoSid *string ``
+	CompanyTwoSid *string `gorm:"size:34"`
 
 	// @gotags: fake:"skip"
 	CompanyTwo *CompanyGormModel `gorm:"foreignKey:CompanyTwoSid;references:sid;constraint:OnDelete:CASCADE;" json:"companyTwo" fake:"skip"`
@@ -537,7 +537,7 @@ type CompanyProtos []*Company
 type CompanyGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey;size:34" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -707,7 +707,7 @@ type AddressProtos []*Address
 type AddressGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey;size:34" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -721,7 +721,7 @@ type AddressGormModel struct {
 	// @gotags: fake:"skip"
 	UserId *string `json:"userId" fake:"skip"`
 
-	UserSid *string ``
+	UserSid *string `gorm:"size:34"`
 
 	// @gotags: fake:"skip"
 	User *UserGormModel `gorm:"foreignKey:UserSid;references:sid;constraint:OnDelete:CASCADE;" json:"user" fake:"skip"`
@@ -925,7 +925,7 @@ type CommentProtos []*Comment
 type CommentGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey;size:34" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
@@ -936,7 +936,7 @@ type CommentGormModel struct {
 	// @gotags: fake:"{name}"
 	Name string `json:"name" fake:"{name}"`
 
-	UserSid *string ``
+	UserSid *string `gorm:"size:34"`
 
 	// @gotags: fake:"skip"
 	User *UserGormModel `gorm:"foreignKey:UserSid;references:sid;constraint:OnDelete:CASCADE;" json:"user" fake:"skip"`
@@ -1113,7 +1113,7 @@ type ProfileProtos []*Profile
 type ProfileGormModel struct {
 
 	// @gotags: fake:"skip"
-	Sid string `gorm:"primaryKey" json:"sid" fake:"skip"`
+	Sid string `gorm:"primaryKey;size:34" json:"sid" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CreatedAt *time.Time `gorm:"type:timestamp;" json:"createdAt" fake:"skip"`
