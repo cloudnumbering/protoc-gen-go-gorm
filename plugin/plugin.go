@@ -131,12 +131,12 @@ func gormModelField(field *ModelField) string {
 }
 
 func getPrimitiveGormModelField(field *ModelField) string {
-	return fmt.Sprintf("%s%s %s %s", fieldComments(field.Field), getPrimitiveGormModelFieldName(field.Field), getPrimitiveGormModelFieldType(field.Field), getFieldTags(field))
+	return fmt.Sprintf("%s%s %s %s", fieldComments(field.Field), getPrimitiveGormModelFieldName(field.Field), getPrimitiveGormModelFieldType(field), getFieldTags(field))
 }
 
 func getMessageGormModelField(field *ModelField) (modelField string) {
 	fieldName := getMessageGormModelFieldName(field.Field)
-	fieldType := getMessageGormModelFieldType(field.Field)
+	fieldType := getMessageGormModelFieldType(field)
 	fieldTags := getFieldTags(field)
 	options := getFieldOptions(field.Field)
 	if !isTimestamp(field.Field) && options != nil {
@@ -182,20 +182,25 @@ func getMessageGormModelFieldName(field *protogen.Field) string {
 	return fieldGoName(field)
 }
 
-func getPrimitiveGormModelFieldType(field *protogen.Field) (fieldType string) {
+func getPrimitiveGormModelFieldType(model *ModelField) (fieldType string) {
+	field := model.Field
 	pointer := pointer(field)
+
 	if isRepeated(field) {
 		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/lib/pq"})
 		fieldType = gormArrayTypeMap[fieldKind(field)]
 	} else {
 		fieldType = gormTypeMap[fieldKind(field)]
 	}
+
 	return fmt.Sprintf("%s%s", pointer, fieldType)
 }
 
-func getMessageGormModelFieldType(field *protogen.Field) (fieldType string) {
+func getMessageGormModelFieldType(model *ModelField) (fieldType string) {
+	field := model.Field
 	pointer := pointer(field)
 	goType := gormModelName(field.Message)
+
 	if isTimestamp(field) {
 		g.QualifiedGoIdent(protogen.GoIdent{
 			GoName:       "",

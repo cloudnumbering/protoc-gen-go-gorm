@@ -96,8 +96,10 @@ func (m *{{ .Model.Name }}) ToProto() (theProto *{{.GoIdent.GoName}}, err error)
     {{ else if and .Enum ( eq .IsRepeated false) }}
 	{{ if .Options.EnumAsString }}
 	theProto.{{ .GoName }} = {{ .Enum.GoIdent.GoName }}({{ .Enum.GoIdent.GoName }}_value[m.{{ .GoName }}])
+    {{ else if .QualifiedName }}
+	theProto.{{ .GoName }} =  {{ .QualifiedName }}{{ .Enum.GoIdent.GoName }}(m.{{ .GoName }})
     {{ else }}
-	theProto.{{ .GoName }} = {{ .Enum.GoIdent.GoName }}(m.{{ .GoName }})
+	theProto.{{ .GoName }} =  {{ .Enum.GoIdent.GoName }}(m.{{ .GoName }})
     {{ end }}
 	{{ else if and .Enum .IsRepeated }}
 	{{ if .Options.EnumAsString }}

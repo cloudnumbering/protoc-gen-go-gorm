@@ -25,6 +25,7 @@ type ModelField struct {
 	ShouldGenerateBelongsToIdField bool
 	HasReplaceRelationships        bool // any relationships except belongs to needs replace calls
 	TimeFormat                     string
+	QualifiedName                  string
 }
 
 func (f *ModelField) Parse() (err error) {
@@ -50,6 +51,12 @@ func (f *ModelField) Parse() (err error) {
 	f.ShouldGenerateBelongsToIdField = shouldGenerateBelongsToIdField(f)
 	f.HasReplaceRelationships = hasReplaceRelationships(f)
 	f.TimeFormat = getTimeFormat(f)
+
+	if f.Options.Import != "" {
+		f.QualifiedName = g.QualifiedGoIdent(protogen.GoIdent{
+			GoImportPath: protogen.GoImportPath(f.Options.Import),
+		})
+	}
 
 	return
 }
@@ -109,7 +116,7 @@ func getModelFieldType(field *ModelField) string {
 		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "encoding/json"})
 		return "gorm_jsonb.JSONB"
 	} else if field.IsMessage {
-		return getMessageGormModelFieldType(field.Field)
+		return getMessageGormModelFieldType(field)
 	} else if field.Enum != nil {
 		if field.IsRepeated {
 			// @todo
@@ -125,7 +132,7 @@ func getModelFieldType(field *ModelField) string {
 		}
 		return "int"
 	} else {
-		return getPrimitiveGormModelFieldType(field.Field)
+		return getPrimitiveGormModelFieldType(field)
 	}
 }
 
