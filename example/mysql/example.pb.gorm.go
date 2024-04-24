@@ -178,7 +178,9 @@ func (m *UserGormModel) ToProto() (theProto *User, err error) {
 
 	theProto.AnInt64 = m.AnInt64
 
-	theProto.ABool = m.ABool
+	if m.ABool != nil {
+		theProto.ABool = *m.ABool
+	}
 
 	theProto.AString = m.AString
 
@@ -315,7 +317,7 @@ func (p *User) ToModel() (theModel *UserGormModel, err error) {
 
 	theModel.AnInt64 = p.AnInt64
 
-	theModel.ABool = p.ABool
+	theModel.ABool = &p.ABool
 
 	theModel.AString = p.AString
 

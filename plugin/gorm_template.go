@@ -11,7 +11,7 @@ type {{ .Model.Name }} struct {
     {{ .Options.GetBelongsTo.Foreignkey }} *string {{ sizeTag }}
     {{ end }}
     {{ .Comments -}}
-    {{ .GoName }} {{ if .IsPointer }}*{{end}}{{ .ModelType }} {{ .Tag -}}
+    {{ .GoName }} {{ if .IsPointer }}*{{ end }}{{ .ModelType }} {{ .Tag -}}
 	{{ end }}
 }
 
@@ -118,7 +118,13 @@ func (m *{{ .Model.Name }}) ToProto() (theProto *{{.GoIdent.GoName}}, err error)
 	}
     {{ end }}
     {{ else }}
+	{{ if .IsPointer }}
+	if m.{{ .GoName }} != nil {
+		theProto.{{ .GoName }} = *m.{{ .GoName }}
+	}
+	{{ else }}
     theProto.{{ .GoName }} = m.{{ .GoName }}
+	{{ end }}
     {{ end }}
 	{{ end }}
 	return
@@ -220,7 +226,11 @@ func (p *{{.GoIdent.GoName}}) ToModel() (theModel *{{ .Model.Name }}, err error)
 	}
 	{{ end }}
     {{ else }}
-    theModel.{{ .GoName }} = p.{{ .GoName }}
+	{{ if .IsPointer }}
+	theModel.{{ .GoName }} = &p.{{ .GoName }}
+	{{ else }}
+	theModel.{{ .GoName }} = p.{{ .GoName }}
+	{{ end }}
     {{ end }}
 	{{ end }}
 	return
