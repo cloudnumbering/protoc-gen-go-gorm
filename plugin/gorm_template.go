@@ -11,7 +11,7 @@ type {{ .Model.Name }} struct {
     {{ .Options.GetBelongsTo.Foreignkey }} *string {{ sizeTag }}
     {{ end }}
     {{ .Comments -}}
-    {{ .GoName }} {{ .ModelType }} {{ .Tag -}}
+    {{ .GoName }} {{ if .IsPointer }}*{{end}}{{ .ModelType }} {{ .Tag -}}
 	{{ end }}
 }
 

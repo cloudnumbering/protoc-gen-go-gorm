@@ -18,6 +18,7 @@ type ModelField struct {
 	IsTimestamp                    bool
 	IsStructPb                     bool
 	IsJsonb                        bool
+	IsPointer                      bool
 	IsOptional                     bool
 	Comments                       string
 	Ignore                         bool
@@ -44,6 +45,7 @@ func (f *ModelField) Parse() (err error) {
 	f.IsOptional = isOptional(f.Field)
 	f.IsStructPb = isStructPb(f.Field)
 	f.IsJsonb = hasJsonbOption(f.Field)
+	f.IsPointer = hasPointerOption(f.Field)
 	f.Comments = f.Field.Comments.Leading.String() + f.Field.Comments.Trailing.String()
 	f.ModelType = getModelFieldType(f)
 	f.ModelSingularType = getModelFieldSingularType(f)
@@ -95,6 +97,11 @@ func isStructPb(field *protogen.Field) bool {
 func hasJsonbOption(field *protogen.Field) bool {
 	opts := getFieldOptions(field)
 	return opts != nil && opts.Jsonb
+}
+
+func hasPointerOption(field *protogen.Field) bool {
+	opts := getFieldOptions(field)
+	return opts != nil && opts.Pointer
 }
 
 func getModelFieldType(field *ModelField) string {

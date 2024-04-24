@@ -41,7 +41,7 @@ type UserGormModel struct {
 	AnInt64 int64 `json:"anInt64" fake:"{number:9223372036854775807}"`
 
 	// @gotags: fake:"{bool}"
-	ABool bool `json:"aBool" fake:"{bool}"`
+	ABool *bool `json:"aBool" fake:"{bool}"`
 
 	// @gotags: fake:"{hackerphrase}"
 	AString string `json:"aString" fake:"{hackerphrase}"`

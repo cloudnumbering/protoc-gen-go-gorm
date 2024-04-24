@@ -38,7 +38,7 @@ message User {
   // @gotags: fake:"{number:9223372036854775807}"
   int64 an_int64 = 7;
   // @gotags: fake:"{bool}"
-  bool a_bool = 16;
+  bool a_bool = 16 [(gorm.field).pointer = true];
   // @gotags: fake:"{hackerphrase}"
   string a_string = 17;
   // @gotags: fake:"skip"

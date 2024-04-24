@@ -131,4 +131,5 @@ message GormFieldOptions {
   string time_format_override = 11;
   bool jsonb = 12;
   string import = 13;
+  bool pointer = 14;
 }
