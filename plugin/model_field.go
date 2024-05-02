@@ -127,11 +127,11 @@ func getModelFieldType(field *ModelField) string {
 	} else if field.Enum != nil {
 		if field.IsRepeated {
 			// @todo
-			g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/lib/pq"})
+			g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "gorm.io/datatypes"})
 			if field.Options.EnumAsString {
-				return "pq.StringArray"
+				return "datatypes.JSONSlice[string]"
 			} else {
-				return "pq.Int32Array"
+				return "datatypes.JSONSlice[int32]"
 			}
 		}
 		if field.Options.EnumAsString {

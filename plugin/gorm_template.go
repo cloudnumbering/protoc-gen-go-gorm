@@ -212,14 +212,14 @@ func (p *{{.GoIdent.GoName}}) ToModel() (theModel *{{ .Model.Name }}, err error)
 	{{ else if and .Enum .IsRepeated }}
 	{{ if .Options.EnumAsString }}
 	if len(p.{{ .GoName }}) > 0 {
-		theModel.{{ .GoName }} = pq.StringArray{}
+		theModel.{{ .GoName }} = datatypes.JSONSlice[string]{}
 		for _, val := range p.{{ .GoName }} {
 			theModel.{{ .GoName }} = append(theModel.{{ .GoName }}, val.String())
 		}
 	}
     {{ else }}
 	if len(p.{{ .GoName }}) > 0 {
-		theModel.{{ .GoName }} = pq.Int32Array{}
+		theModel.{{ .GoName }} = datatypes.JSONSlice[int32]{}
 		for _, val := range p.{{ .GoName }} {
 			theModel.{{ .GoName }} = append(theModel.{{ .GoName }}, int32(val))
 		}

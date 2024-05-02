@@ -7,9 +7,9 @@ import (
 	context "context"
 	json "encoding/json"
 	gorm_jsonb "github.com/dariubs/gorm-jsonb"
-	pq "github.com/lib/pq"
 	lo "github.com/samber/lo"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	datatypes "gorm.io/datatypes"
 	gorm "gorm.io/gorm"
 	clause "gorm.io/gorm/clause"
 	time "time"
@@ -50,25 +50,25 @@ type UserGormModel struct {
 	ABytes []byte `json:"aBytes" fake:"skip"`
 
 	// @gotags: fake:"{price:0.00,1000.00}"
-	Doubles pq.Float64Array `gorm:"type:float[];" json:"doubles" fake:"{price:0.00,1000.00}"`
+	Doubles datatypes.JSONSlice[float64] `json:"doubles" fake:"{price:0.00,1000.00}"`
 
 	// @gotags: fake:"{price:0.00,1000.00}"
-	Floats pq.Float32Array `gorm:"type:float[];" json:"floats" fake:"{price:0.00,1000.00}"`
+	Floats datatypes.JSONSlice[float32] `json:"floats" fake:"{price:0.00,1000.00}"`
 
 	// @gotags: fake:"{int32}"
-	Int32S pq.Int32Array `gorm:"type:int[];" json:"int32s" fake:"{int32}"`
+	Int32S datatypes.JSONSlice[int32] `json:"int32s" fake:"{int32}"`
 
 	// @gotags: fake:"{number:9223372036854775807}"
-	Int64S pq.Int64Array `gorm:"type:int[];" json:"int64s" fake:"{number:9223372036854775807}"`
+	Int64S datatypes.JSONSlice[int64] `json:"int64s" fake:"{number:9223372036854775807}"`
 
 	// @gotags: fake:"{bool}"
-	Bools pq.BoolArray `gorm:"type:bool[];" json:"bools" fake:"{bool}"`
+	Bools datatypes.JSONSlice[bool] `json:"bools" fake:"{bool}"`
 
 	// @gotags: fake:"{hackerphrase}"
-	Strings pq.StringArray `gorm:"type:string[];" json:"strings" fake:"{hackerphrase}"`
+	Strings datatypes.JSONSlice[string] `json:"strings" fake:"{hackerphrase}"`
 
 	// @gotags: fake:"skip"
-	Bytess pq.ByteaArray `gorm:"type:bytes[];" json:"bytess" fake:"skip"`
+	Bytess datatypes.JSONSlice[[]byte] `json:"bytess" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	OptionalScalarField *string `json:"optionalScalarField" fake:"skip"`
@@ -111,10 +111,10 @@ type UserGormModel struct {
 	StringEnum string `json:"stringEnum" fake:"{number:1,9}"`
 
 	// @gotags: fake:"{number:1,9}"
-	IntEnumList pq.Int32Array `gorm:"type:int[];" json:"intEnumList" fake:"{number:1,9}"`
+	IntEnumList datatypes.JSONSlice[int32] `json:"intEnumList" fake:"{number:1,9}"`
 
 	// @gotags: fake:"{number:1,9}"
-	StringEnumList pq.StringArray `gorm:"type:string[];" json:"stringEnumList" fake:"{number:1,9}"`
+	StringEnumList datatypes.JSONSlice[string] `json:"stringEnumList" fake:"{number:1,9}"`
 
 	// @gotags: fake:"{date:2006-01-02}"
 	Date *time.Time `json:"date" fake:"{date:2006-01-02}"`
@@ -413,14 +413,14 @@ func (p *User) ToModel() (theModel *UserGormModel, err error) {
 	theModel.StringEnum = p.StringEnum.String()
 
 	if len(p.IntEnumList) > 0 {
-		theModel.IntEnumList = pq.Int32Array{}
+		theModel.IntEnumList = datatypes.JSONSlice[int32]{}
 		for _, val := range p.IntEnumList {
 			theModel.IntEnumList = append(theModel.IntEnumList, int32(val))
 		}
 	}
 
 	if len(p.StringEnumList) > 0 {
-		theModel.StringEnumList = pq.StringArray{}
+		theModel.StringEnumList = datatypes.JSONSlice[string]{}
 		for _, val := range p.StringEnumList {
 			theModel.StringEnumList = append(theModel.StringEnumList, val.String())
 		}

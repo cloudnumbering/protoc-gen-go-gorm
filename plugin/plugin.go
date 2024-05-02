@@ -188,7 +188,7 @@ func getPrimitiveGormModelFieldType(model *ModelField) (fieldType string) {
 	pointer := pointer(field)
 
 	if isRepeated(field) {
-		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/lib/pq"})
+		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "gorm.io/datatypes"})
 		fieldType = gormArrayTypeMap[fieldKind(field)]
 	} else {
 		fieldType = gormTypeMap[fieldKind(field)]
@@ -242,9 +242,9 @@ func getGormFieldTag(field *ModelField) string {
 	} else if isStructPb(field.Field) || hasJsonbOption(field.Field) {
 		tag += fmt.Sprintf("type:jsonb")
 	} else if isRepeated(field.Field) && field.Enum != nil {
-		tag += fmt.Sprintf("type:%s;", repeatedEnumTypeMap[engine][field.Options.EnumAsString])
+		// tag += fmt.Sprintf("type:%s;", repeatedEnumTypeMap[engine][field.Options.EnumAsString])
 	} else if isRepeated(field.Field) && !isMessage(field.Field) {
-		tag += fmt.Sprintf("type:%s;", gormTagTypeMap[engine][fieldKind(field.Field)])
+		// tag += fmt.Sprintf("type:%s;", gormTagTypeMap[engine][fieldKind(field.Field)])
 	}
 	options := getFieldOptions(field.Field)
 	if options != nil {
@@ -454,14 +454,14 @@ var gormTypeMap = map[protoreflect.Kind]string{
 }
 
 var gormArrayTypeMap = map[protoreflect.Kind]string{
-	protoreflect.BoolKind:   "pq.BoolArray",
-	protoreflect.EnumKind:   "pq.Int32Array",
-	protoreflect.Int32Kind:  "pq.Int32Array",
-	protoreflect.FloatKind:  "pq.Float32Array",
-	protoreflect.Int64Kind:  "pq.Int64Array",
-	protoreflect.DoubleKind: "pq.Float64Array",
-	protoreflect.StringKind: "pq.StringArray",
-	protoreflect.BytesKind:  "pq.ByteaArray",
+	protoreflect.BoolKind:   "datatypes.JSONSlice[bool]",
+	protoreflect.EnumKind:   "datatypes.JSONSlice[int32]",
+	protoreflect.Int32Kind:  "datatypes.JSONSlice[int32]",
+	protoreflect.FloatKind:  "datatypes.JSONSlice[float32]",
+	protoreflect.Int64Kind:  "datatypes.JSONSlice[int64]",
+	protoreflect.DoubleKind: "datatypes.JSONSlice[float64]",
+	protoreflect.StringKind: "datatypes.JSONSlice[string]",
+	protoreflect.BytesKind:  "datatypes.JSONSlice[[]byte]",
 }
 
 var gormTagTypeMap = map[string]map[protoreflect.Kind]string{
