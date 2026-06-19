@@ -6,7 +6,6 @@ package example
 import (
 	context "context"
 	json "encoding/json"
-	gorm_jsonb "github.com/dariubs/gorm-jsonb"
 	lo "github.com/samber/lo"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	datatypes "gorm.io/datatypes"
@@ -74,7 +73,7 @@ type UserGormModel struct {
 	OptionalScalarField *string `json:"optionalScalarField" fake:"skip"`
 
 	// @gotags: fake:"skip"
-	AStructpb gorm_jsonb.JSONB `gorm:"type:jsonb" json:"aStructpb" fake:"skip"`
+	AStructpb datatypes.JSON `gorm:"type:json" json:"aStructpb" fake:"skip"`
 
 	CompanySid *string `gorm:"size:34"`
 
@@ -729,7 +728,7 @@ type AddressGormModel struct {
 	User *UserGormModel `gorm:"foreignKey:UserSid;references:sid;constraint:OnDelete:CASCADE;" json:"user" fake:"skip"`
 
 	// @gotags: fake:"skip"
-	CompanyBlob gorm_jsonb.JSONB `gorm:"type:jsonb" json:"companyBlob" fake:"skip"`
+	CompanyBlob datatypes.JSON `gorm:"type:json" json:"companyBlob" fake:"skip"`
 }
 
 func (m *AddressGormModel) TableName() string {

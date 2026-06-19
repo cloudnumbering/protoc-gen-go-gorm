@@ -119,8 +119,12 @@ func getModelFieldType(field *ModelField) string {
 		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "time"})
 		return "*time.Time"
 	} else if field.IsStructPb || field.IsJsonb {
-		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/dariubs/gorm-jsonb"})
 		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "encoding/json"})
+		if engine == mysqlEngine {
+			g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "gorm.io/datatypes"})
+			return "datatypes.JSON"
+		}
+		g.QualifiedGoIdent(protogen.GoIdent{GoImportPath: "github.com/dariubs/gorm-jsonb"})
 		return "gorm_jsonb.JSONB"
 	} else if field.IsMessage {
 		return getMessageGormModelFieldType(field)

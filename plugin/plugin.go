@@ -240,7 +240,11 @@ func getGormFieldTag(field *ModelField) string {
 	} else if isTimestamp(field.Field) {
 		tag += "type:timestamp;"
 	} else if isStructPb(field.Field) || hasJsonbOption(field.Field) {
-		tag += fmt.Sprintf("type:jsonb")
+		if engine == mysqlEngine {
+			tag += "type:json"
+		} else {
+			tag += "type:jsonb"
+		}
 	} else if isRepeated(field.Field) && field.Enum != nil {
 		// tag += fmt.Sprintf("type:%s;", repeatedEnumTypeMap[engine][field.Options.EnumAsString])
 	} else if isRepeated(field.Field) && !isMessage(field.Field) {

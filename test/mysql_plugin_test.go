@@ -129,7 +129,6 @@ func (s *MySQLPluginSuite) TestHasOneByObject() {
 	// set the address on the expected proto for comparison
 	expectedUser.Address = addressProtos[0]
 	expectedUser.Address.User = nil
-	expectedUser.Address.UserId = &expectedUser.Sid
 
 	// fetch the user
 	fetchedUserModel, err := getMysqlUserById(user.Sid)
@@ -155,15 +154,15 @@ func (s *MySQLPluginSuite) TestHasOneById() {
 
 	// create the address
 	address := getMysqlAddress(s.T())
-	address.UserId = &user.Sid
-	addressProtos := AddressProtos{address}
-	_, err = addressProtos.Upsert(context.Background(), mysqlDb)
+	addressModel, err := address.ToModel()
+	require.NoError(s.T(), err)
+	addressModel.UserSid = &user.Sid
+	err = mysqlDb.Create(addressModel).Error
 	require.NoError(s.T(), err)
 
 	// set the address on the expected proto for comparison
-	expectedUser.Address = addressProtos[0]
+	expectedUser.Address = address
 	expectedUser.Address.User = nil
-	expectedUser.Address.UserId = &expectedUser.Sid
 
 	// fetch the user
 	fetchedUserModel, err := getMysqlUserById(user.Sid)
@@ -332,6 +331,7 @@ func getMysqlUser(t *testing.T) (thing *User) {
 	thing = &User{}
 	err := gofakeit.Struct(&thing)
 	require.NoError(t, err)
+	thing.Sid = fakeSid()
 	theMap := gofakeit.Map()
 	bytes, err := json.Marshal(theMap)
 	require.NoError(t, err)
@@ -350,6 +350,7 @@ func getMysqlComments(t *testing.T, num int) []*Comment {
 		var comment *Comment
 		err := gofakeit.Struct(&comment)
 		require.NoError(t, err)
+		comment.Sid = fakeSid()
 		comments = append(comments, comment)
 	}
 	return comments
@@ -365,6 +366,7 @@ func getMysqlProfiles(t *testing.T, num int) []*Profile {
 		var profile *Profile
 		err := gofakeit.Struct(&profile)
 		require.NoError(t, err)
+		profile.Sid = fakeSid()
 		profiles = append(profiles, profile)
 	}
 	return profiles
@@ -386,6 +388,7 @@ func getMysqlCompany(t *testing.T) *Company {
 	var company *Company
 	err := gofakeit.Struct(&company)
 	require.NoError(t, err)
+	company.Sid = fakeSid()
 	return company
 }
 
@@ -393,13 +396,18 @@ func getMysqlAddress(t *testing.T) *Address {
 	var address *Address
 	err := gofakeit.Struct(&address)
 	require.NoError(t, err)
+	address.Sid = fakeSid()
 	address.CompanyBlob = getMysqlCompany(t)
 	return address
+}
+
+func fakeSid() string {
+	return fmt.Sprintf("sid_%d", gofakeit.Uint64())
 }
 
 func getMysqlUserById(id string) (*UserGormModel, error) {
 	session := mysqlDb.Session(&gorm.Session{})
 	var user *UserGormModel
-	err := session.Preload(clause.Associations).First(&user, "id = ?", id).Error
+	err := session.Preload(clause.Associations).First(&user, "sid = ?", id).Error
 	return user, err
 }
