@@ -5,6 +5,7 @@ build-example:
 	go install github.com/favadi/protoc-go-inject-tag@latest
 	go install github.com/mitchellh/protoc-gen-go-json@latest
 	buf generate --template example/mysql/buf.gen.yaml --path example/mysql
+	protoc-go-inject-tag -input example/mysql/*.pb.go
 	protoc-go-inject-tag -input example/mysql/*.*.*.go
 clean:
 	rm -f example/mysql/*.go

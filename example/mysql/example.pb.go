@@ -99,73 +99,73 @@ type User struct {
 	unknownFields protoimpl.UnknownFields
 
 	// @gotags: fake:"skip"
-	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty"`
+	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CreatedAt string `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt string `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" fake:"skip"`
 	// @gotags: fake:"{price:0.00,1000.00}"
-	ADouble float64 `protobuf:"fixed64,4,opt,name=a_double,json=aDouble,proto3" json:"a_double,omitempty"`
+	ADouble float64 `protobuf:"fixed64,4,opt,name=a_double,json=aDouble,proto3" json:"a_double,omitempty" fake:"{price:0.00,1000.00}"`
 	// @gotags: fake:"{price:0.00,1000.00}"
-	AFloat float32 `protobuf:"fixed32,5,opt,name=a_float,json=aFloat,proto3" json:"a_float,omitempty"`
+	AFloat float32 `protobuf:"fixed32,5,opt,name=a_float,json=aFloat,proto3" json:"a_float,omitempty" fake:"{price:0.00,1000.00}"`
 	// @gotags: fake:"{int32}"
-	AnInt32 int32 `protobuf:"varint,6,opt,name=an_int32,json=anInt32,proto3" json:"an_int32,omitempty"`
+	AnInt32 int32 `protobuf:"varint,6,opt,name=an_int32,json=anInt32,proto3" json:"an_int32,omitempty" fake:"{int32}"`
 	// @gotags: fake:"{number:9223372036854775807}"
-	AnInt64 int64 `protobuf:"varint,7,opt,name=an_int64,json=anInt64,proto3" json:"an_int64,omitempty"`
+	AnInt64 int64 `protobuf:"varint,7,opt,name=an_int64,json=anInt64,proto3" json:"an_int64,omitempty" fake:"{number:9223372036854775807}"`
 	// @gotags: fake:"{bool}"
-	ABool bool `protobuf:"varint,16,opt,name=a_bool,json=aBool,proto3" json:"a_bool,omitempty"`
+	ABool bool `protobuf:"varint,16,opt,name=a_bool,json=aBool,proto3" json:"a_bool,omitempty" fake:"{bool}"`
 	// @gotags: fake:"{hackerphrase}"
-	AString string `protobuf:"bytes,17,opt,name=a_string,json=aString,proto3" json:"a_string,omitempty"`
+	AString string `protobuf:"bytes,17,opt,name=a_string,json=aString,proto3" json:"a_string,omitempty" fake:"{hackerphrase}"`
 	// @gotags: fake:"skip"
-	ABytes []byte `protobuf:"bytes,18,opt,name=a_bytes,json=aBytes,proto3" json:"a_bytes,omitempty"`
+	ABytes []byte `protobuf:"bytes,18,opt,name=a_bytes,json=aBytes,proto3" json:"a_bytes,omitempty" fake:"skip"`
 	// @gotags: fake:"{price:0.00,1000.00}"
-	Doubles []float64 `protobuf:"fixed64,19,rep,packed,name=doubles,proto3" json:"doubles,omitempty"`
+	Doubles []float64 `protobuf:"fixed64,19,rep,packed,name=doubles,proto3" json:"doubles,omitempty" fake:"{price:0.00,1000.00}"`
 	// @gotags: fake:"{price:0.00,1000.00}"
-	Floats []float32 `protobuf:"fixed32,20,rep,packed,name=floats,proto3" json:"floats,omitempty"`
+	Floats []float32 `protobuf:"fixed32,20,rep,packed,name=floats,proto3" json:"floats,omitempty" fake:"{price:0.00,1000.00}"`
 	// @gotags: fake:"{int32}"
-	Int32S []int32 `protobuf:"varint,21,rep,packed,name=int32s,proto3" json:"int32s,omitempty"`
+	Int32S []int32 `protobuf:"varint,21,rep,packed,name=int32s,proto3" json:"int32s,omitempty" fake:"{int32}"`
 	// @gotags: fake:"{number:9223372036854775807}"
-	Int64S []int64 `protobuf:"varint,22,rep,packed,name=int64s,proto3" json:"int64s,omitempty"`
+	Int64S []int64 `protobuf:"varint,22,rep,packed,name=int64s,proto3" json:"int64s,omitempty" fake:"{number:9223372036854775807}"`
 	// @gotags: fake:"{bool}"
-	Bools []bool `protobuf:"varint,31,rep,packed,name=bools,proto3" json:"bools,omitempty"`
+	Bools []bool `protobuf:"varint,31,rep,packed,name=bools,proto3" json:"bools,omitempty" fake:"{bool}"`
 	// @gotags: fake:"{hackerphrase}"
-	Strings []string `protobuf:"bytes,32,rep,name=strings,proto3" json:"strings,omitempty"`
+	Strings []string `protobuf:"bytes,32,rep,name=strings,proto3" json:"strings,omitempty" fake:"{hackerphrase}"`
 	// @gotags: fake:"skip"
-	Bytess [][]byte `protobuf:"bytes,33,rep,name=bytess,proto3" json:"bytess,omitempty"`
+	Bytess [][]byte `protobuf:"bytes,33,rep,name=bytess,proto3" json:"bytess,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	OptionalScalarField *string `protobuf:"bytes,34,opt,name=optional_scalar_field,json=optionalScalarField,proto3,oneof" json:"optional_scalar_field,omitempty"`
+	OptionalScalarField *string `protobuf:"bytes,34,opt,name=optional_scalar_field,json=optionalScalarField,proto3,oneof" json:"optional_scalar_field,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	AStructpb *structpb.Struct `protobuf:"bytes,35,opt,name=a_structpb,json=aStructpb,proto3" json:"a_structpb,omitempty"`
+	AStructpb *structpb.Struct `protobuf:"bytes,35,opt,name=a_structpb,json=aStructpb,proto3" json:"a_structpb,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	Company *Company `protobuf:"bytes,36,opt,name=company,proto3" json:"company,omitempty"`
+	Company *Company `protobuf:"bytes,36,opt,name=company,proto3" json:"company,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CompanyTwoId *string `protobuf:"bytes,37,opt,name=company_two_id,json=companyTwoId,proto3,oneof" json:"company_two_id,omitempty"`
+	CompanyTwoId *string `protobuf:"bytes,37,opt,name=company_two_id,json=companyTwoId,proto3,oneof" json:"company_two_id,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CompanyTwo *Company `protobuf:"bytes,38,opt,name=company_two,json=companyTwo,proto3" json:"company_two,omitempty"`
+	CompanyTwo *Company `protobuf:"bytes,38,opt,name=company_two,json=companyTwo,proto3" json:"company_two,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	AnUnexpectedId *string `protobuf:"bytes,39,opt,name=an_unexpected_id,json=anUnexpectedId,proto3,oneof" json:"an_unexpected_id,omitempty"`
+	AnUnexpectedId *string `protobuf:"bytes,39,opt,name=an_unexpected_id,json=anUnexpectedId,proto3,oneof" json:"an_unexpected_id,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CompanyThree *Company `protobuf:"bytes,40,opt,name=company_three,json=companyThree,proto3" json:"company_three,omitempty"`
+	CompanyThree *Company `protobuf:"bytes,40,opt,name=company_three,json=companyThree,proto3" json:"company_three,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	Address *Address `protobuf:"bytes,41,opt,name=address,proto3" json:"address,omitempty"`
+	Address *Address `protobuf:"bytes,41,opt,name=address,proto3" json:"address,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	Comments []*Comment `protobuf:"bytes,42,rep,name=comments,proto3" json:"comments,omitempty"`
+	Comments []*Comment `protobuf:"bytes,42,rep,name=comments,proto3" json:"comments,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	Profiles []*Profile `protobuf:"bytes,43,rep,name=profiles,proto3" json:"profiles,omitempty"`
+	Profiles []*Profile `protobuf:"bytes,43,rep,name=profiles,proto3" json:"profiles,omitempty" fake:"skip"`
 	// @gotags: fake:"{number:1,9}"
-	IntEnum EnumOne `protobuf:"varint,44,opt,name=int_enum,json=intEnum,proto3,enum=example.postgres.EnumOne" json:"int_enum,omitempty"`
+	IntEnum EnumOne `protobuf:"varint,44,opt,name=int_enum,json=intEnum,proto3,enum=example.postgres.EnumOne" json:"int_enum,omitempty" fake:"{number:1,9}"`
 	// @gotags: fake:"{number:1,9}"
-	StringEnum EnumOne `protobuf:"varint,45,opt,name=string_enum,json=stringEnum,proto3,enum=example.postgres.EnumOne" json:"string_enum,omitempty"`
+	StringEnum EnumOne `protobuf:"varint,45,opt,name=string_enum,json=stringEnum,proto3,enum=example.postgres.EnumOne" json:"string_enum,omitempty" fake:"{number:1,9}"`
 	// @gotags: fake:"{number:1,9}"
-	IntEnumList []EnumOne `protobuf:"varint,46,rep,packed,name=int_enum_list,json=intEnumList,proto3,enum=example.postgres.EnumOne" json:"int_enum_list,omitempty"`
+	IntEnumList []EnumOne `protobuf:"varint,46,rep,packed,name=int_enum_list,json=intEnumList,proto3,enum=example.postgres.EnumOne" json:"int_enum_list,omitempty" fake:"{number:1,9}"`
 	// @gotags: fake:"{number:1,9}"
-	StringEnumList []EnumOne `protobuf:"varint,47,rep,packed,name=string_enum_list,json=stringEnumList,proto3,enum=example.postgres.EnumOne" json:"string_enum_list,omitempty"`
+	StringEnumList []EnumOne `protobuf:"varint,47,rep,packed,name=string_enum_list,json=stringEnumList,proto3,enum=example.postgres.EnumOne" json:"string_enum_list,omitempty" fake:"{number:1,9}"`
 	// @gotags: fake:"{date:2006-01-02}"
-	Date string `protobuf:"bytes,48,opt,name=date,proto3" json:"date,omitempty"`
+	Date string `protobuf:"bytes,48,opt,name=date,proto3" json:"date,omitempty" fake:"{date:2006-01-02}"`
 	// @gotags: fake:"{date:2006-01-02}"
-	OptionalDate *string `protobuf:"bytes,49,opt,name=optional_date,json=optionalDate,proto3,oneof" json:"optional_date,omitempty"`
+	OptionalDate *string `protobuf:"bytes,49,opt,name=optional_date,json=optionalDate,proto3,oneof" json:"optional_date,omitempty" fake:"{date:2006-01-02}"`
 	// @gotags: fake:"skip"
-	SomeTimestamp *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=some_timestamp,json=someTimestamp,proto3" json:"some_timestamp,omitempty"`
+	SomeTimestamp *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=some_timestamp,json=someTimestamp,proto3" json:"some_timestamp,omitempty" fake:"skip"`
 }
 
 func (x *User) Reset() {
@@ -444,13 +444,13 @@ type Company struct {
 	unknownFields protoimpl.UnknownFields
 
 	// @gotags: fake:"skip"
-	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty"`
+	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" fake:"skip"`
 	// @gotags: fake:"{name}"
-	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty" fake:"{name}"`
 }
 
 func (x *Company) Reset() {
@@ -519,19 +519,19 @@ type Address struct {
 	unknownFields protoimpl.UnknownFields
 
 	// @gotags: fake:"skip"
-	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty"`
+	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" fake:"skip"`
 	// @gotags: fake:"{name}"
-	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty" fake:"{name}"`
 	// @gotags: fake:"skip"
-	UserId *string `protobuf:"bytes,5,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	UserId *string `protobuf:"bytes,5,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	User *User `protobuf:"bytes,6,opt,name=user,proto3" json:"user,omitempty"`
+	User *User `protobuf:"bytes,6,opt,name=user,proto3" json:"user,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CompanyBlob *Company `protobuf:"bytes,7,opt,name=companyBlob,proto3" json:"companyBlob,omitempty"`
+	CompanyBlob *Company `protobuf:"bytes,7,opt,name=companyBlob,proto3" json:"companyBlob,omitempty" fake:"skip"`
 }
 
 func (x *Address) Reset() {
@@ -621,15 +621,15 @@ type Comment struct {
 	unknownFields protoimpl.UnknownFields
 
 	// @gotags: fake:"skip"
-	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty"`
+	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" fake:"skip"`
 	// @gotags: fake:"{name}"
-	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty" fake:"{name}"`
 	// @gotags: fake:"skip"
-	User *User `protobuf:"bytes,5,opt,name=user,proto3" json:"user,omitempty"`
+	User *User `protobuf:"bytes,5,opt,name=user,proto3" json:"user,omitempty" fake:"skip"`
 }
 
 func (x *Comment) Reset() {
@@ -705,13 +705,13 @@ type Profile struct {
 	unknownFields protoimpl.UnknownFields
 
 	// @gotags: fake:"skip"
-	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty"`
+	Sid string `protobuf:"bytes,1,opt,name=sid,proto3" json:"sid,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" fake:"skip"`
 	// @gotags: fake:"skip"
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" fake:"skip"`
 	// @gotags: fake:"{name}"
-	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty" fake:"{name}"`
 }
 
 func (x *Profile) Reset() {
