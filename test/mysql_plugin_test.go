@@ -274,14 +274,9 @@ func (s *MySQLPluginSuite) SetupSuite() {
 		mysql_preset.WithDatabase("test"),
 	)
 	var err error
-	portOpt := gnomock.WithCustomNamedPorts(gnomock.NamedPorts{"default": gnomock.Port{
-		Protocol: "tcp",
-		Port:     5432,
-		HostPort: 5432,
-	}})
-	mysqlContainer, err = gnomock.Start(preset, portOpt)
+	mysqlContainer, err = gnomock.Start(preset)
 	require.NoError(s.T(), err)
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", mysqlContainer.Host, mysqlContainer.DefaultPort(), "test", "test", "test", "disable")
+	dsn := fmt.Sprintf("test:test@tcp(%s:%d)/test?parseTime=true", mysqlContainer.Host, mysqlContainer.DefaultPort())
 	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
