@@ -7,18 +7,18 @@ jobs:
   conventional-commits-pr:
     if: github.event.pull_request.draft == false
     name: Validate Conventional Commits PR
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: crazy-max/ghaction-dump-context@v1
       - uses: catalystsquad/action-validate-conventional-commits-pr@v1
   generate:
     name: Generate
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: crazy-max/ghaction-dump-context@v1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Go With Caching
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: "1.20"
       - name: Setup Buf
@@ -32,12 +32,12 @@ jobs:
           commit_message: 'chore: regenerated options and examples'
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: crazy-max/ghaction-dump-context@v1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Go With Caching
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: "1.20"
       - name: Setup Buf
@@ -48,14 +48,14 @@ jobs:
           make test
   release-dry-run:
     name: Release Dry Run
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
     - uses: crazy-max/ghaction-dump-context@v1
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Setup Go With Caching
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: "1.20"
     - name: Get semver-tags
