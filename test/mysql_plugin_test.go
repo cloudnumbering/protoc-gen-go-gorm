@@ -128,6 +128,7 @@ func (s *MySQLPluginSuite) TestHasOneByObject() {
 
 	// set the address on the expected proto for comparison
 	expectedUser.Address = addressProtos[0]
+	expectedUser.Address.UserId = &user.Sid
 	expectedUser.Address.User = nil
 
 	// fetch the user
@@ -154,14 +155,13 @@ func (s *MySQLPluginSuite) TestHasOneById() {
 
 	// create the address
 	address := getMysqlAddress(s.T())
-	addressModel, err := address.ToModel()
-	require.NoError(s.T(), err)
-	addressModel.UserSid = &user.Sid
-	err = mysqlDb.Create(addressModel).Error
+	address.UserId = &user.Sid
+	addressProtos := AddressProtos{address}
+	_, err = addressProtos.Upsert(context.Background(), mysqlDb)
 	require.NoError(s.T(), err)
 
 	// set the address on the expected proto for comparison
-	expectedUser.Address = address
+	expectedUser.Address = addressProtos[0]
 	expectedUser.Address.User = nil
 
 	// fetch the user

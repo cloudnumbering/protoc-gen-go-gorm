@@ -584,9 +584,31 @@ func getFieldOptions(field *protogen.Field) *gorm.GormFieldOptions {
 	}
 
 	if opts.GetBelongsTo() != nil && opts.GetBelongsTo().Foreignkey == "" {
-		opts.GetBelongsTo().Foreignkey = fmt.Sprintf("%sSid", field.GoName)
+		opts.GetBelongsTo().Foreignkey = getDefaultBelongsToForeignKey(field)
 	}
 	return opts
+}
+
+func getDefaultBelongsToForeignKey(field *protogen.Field) string {
+	for _, suffix := range []string{"Id", "Sid"} {
+		fieldName := fmt.Sprintf("%s%s", field.GoName, suffix)
+		if hasMessageField(field.Parent, fieldName) {
+			return fieldName
+		}
+	}
+	return fmt.Sprintf("%sSid", field.GoName)
+}
+
+func hasMessageField(message *protogen.Message, fieldName string) bool {
+	if message == nil {
+		return false
+	}
+	for _, field := range message.Fields {
+		if field.GoName == fieldName {
+			return true
+		}
+	}
+	return false
 }
 
 func tableName(message *protogen.Message) string {
@@ -605,6 +627,16 @@ func sizeTag() string {
 	return "`gorm:\"size:34\"`"
 }
 
+func getDefaultAssociationForeignKey(field *ModelField) string {
+	for _, suffix := range []string{"Id", "Sid"} {
+		fieldName := fmt.Sprintf("%s%s", field.Parent.GoIdent.GoName, suffix)
+		if hasMessageField(field.Message, fieldName) {
+			return fieldName
+		}
+	}
+	return fmt.Sprintf("%sSid", field.Parent.GoIdent.GoName)
+}
+
 func getForeignKeyTag(field *ModelField) string {
 	fkTemplate := "foreignKey:%s;"
 	fkIdTemplate := "%sSid"
@@ -616,13 +648,13 @@ func getForeignKeyTag(field *ModelField) string {
 		if hasOne.Foreignkey != "" {
 			return fmt.Sprintf(fkTemplate, hasOne.Foreignkey)
 		} else {
-			return fmt.Sprintf(fkTemplate, fmt.Sprintf(fkIdTemplate, field.Parent.GoIdent.GoName))
+			return fmt.Sprintf(fkTemplate, getDefaultAssociationForeignKey(field))
 		}
 	} else if hasMany != nil {
 		if hasMany.Foreignkey != "" {
 			return fmt.Sprintf(fkTemplate, hasMany.Foreignkey)
 		} else {
-			return fmt.Sprintf(fkTemplate, fmt.Sprintf(fkIdTemplate, field.Parent.GoIdent.GoName))
+			return fmt.Sprintf(fkTemplate, getDefaultAssociationForeignKey(field))
 		}
 	} else if belongsTo != nil {
 		if belongsTo.Foreignkey != "" {

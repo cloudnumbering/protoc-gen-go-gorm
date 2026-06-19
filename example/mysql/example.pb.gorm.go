@@ -83,10 +83,8 @@ type UserGormModel struct {
 	// @gotags: fake:"skip"
 	CompanyTwoId *string `json:"companyTwoId" fake:"skip"`
 
-	CompanyTwoSid *string `gorm:"size:34"`
-
 	// @gotags: fake:"skip"
-	CompanyTwo *CompanyGormModel `gorm:"foreignKey:CompanyTwoSid;references:sid;constraint:OnDelete:CASCADE;" json:"companyTwo" fake:"skip"`
+	CompanyTwo *CompanyGormModel `gorm:"foreignKey:CompanyTwoId;references:sid;constraint:OnDelete:CASCADE;" json:"companyTwo" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	AnUnexpectedId *string `json:"anUnexpectedId" fake:"skip"`
@@ -95,7 +93,7 @@ type UserGormModel struct {
 	CompanyThree *CompanyGormModel `gorm:"foreignKey:AnUnexpectedId;references:sid;constraint:OnDelete:CASCADE;" json:"companyThree" fake:"skip"`
 
 	// @gotags: fake:"skip"
-	Address *AddressGormModel `gorm:"foreignKey:UserSid;references:Sid;constraint:OnDelete:CASCADE;" json:"address" fake:"skip"`
+	Address *AddressGormModel `gorm:"foreignKey:UserId;references:Sid;constraint:OnDelete:CASCADE;" json:"address" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	Comments []*CommentGormModel `gorm:"foreignKey:UserSid;references:Sid;constraint:OnDelete:CASCADE;" json:"comments" fake:"skip"`
@@ -365,7 +363,7 @@ func (p *User) ToModel() (theModel *UserGormModel, err error) {
 
 	// if the object is present, the object's id overrides the existing id field value
 	if p.CompanyTwo != nil {
-		theModel.CompanyTwoSid = &p.CompanyTwo.Sid
+		theModel.CompanyTwoId = &p.CompanyTwo.Sid
 	}
 
 	theModel.AnUnexpectedId = p.AnUnexpectedId
@@ -722,10 +720,8 @@ type AddressGormModel struct {
 	// @gotags: fake:"skip"
 	UserId *string `json:"userId" fake:"skip"`
 
-	UserSid *string `gorm:"size:34"`
-
 	// @gotags: fake:"skip"
-	User *UserGormModel `gorm:"foreignKey:UserSid;references:sid;constraint:OnDelete:CASCADE;" json:"user" fake:"skip"`
+	User *UserGormModel `gorm:"foreignKey:UserId;references:sid;constraint:OnDelete:CASCADE;" json:"user" fake:"skip"`
 
 	// @gotags: fake:"skip"
 	CompanyBlob datatypes.JSON `gorm:"type:json" json:"companyBlob" fake:"skip"`
@@ -822,7 +818,7 @@ func (p *Address) ToModel() (theModel *AddressGormModel, err error) {
 
 	// if the object is present, the object's id overrides the existing id field value
 	if p.User != nil {
-		theModel.UserSid = &p.User.Sid
+		theModel.UserId = &p.User.Sid
 	}
 
 	if p.CompanyBlob != nil {
