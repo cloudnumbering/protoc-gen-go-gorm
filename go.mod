@@ -1,6 +1,8 @@
 module github.com/cloudnumbering/protoc-gen-go-gorm
 
-go 1.20
+go 1.26.0
+
+toolchain go1.26.5
 
 require (
 	github.com/brianvoe/gofakeit/v6 v6.21.0
