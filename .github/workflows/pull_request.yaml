@@ -16,11 +16,11 @@ jobs:
     runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: crazy-max/ghaction-dump-context@v1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Setup Go With Caching
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7.0.0
         with:
-          go-version: "1.26.5"
+          go-version: "1.27.1"
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@v1.19.0
         with:
@@ -35,11 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: crazy-max/ghaction-dump-context@v1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Setup Go With Caching
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7.0.0
         with:
-          go-version: "1.26.5"
+          go-version: "1.27.1"
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@v1.19.0
         with:
@@ -51,13 +51,13 @@ jobs:
     runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
     - uses: crazy-max/ghaction-dump-context@v1
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7.0.1
       with:
         fetch-depth: 0
     - name: Setup Go With Caching
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v7.0.0
       with:
-        go-version: "1.26.5"
+        go-version: "1.27.1"
     - name: Get semver-tags
       run: |
         go install github.com/catalystcommunity/semver-tags@latest
