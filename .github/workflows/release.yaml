@@ -34,12 +34,12 @@ jobs:
           go build -race
       - name: Get semver-tags
         run: |
-          go install github.com/catalystcommunity/semver-tags@latest
+          go install github.com/catalystcommunity/semver-tags@v0.6.2
       - name: Semver Tags
         id: semver-tags
         working-directory: ./
         run: |
-          semver-tags run --github_action | yq -P -o=json "."
+          semver-tags run --github_action --skip-short-versions | yq -P -o=json "."
       - name: Make Release
         shell: bash
         env:

@@ -60,12 +60,12 @@ jobs:
         go-version: "1.27.1"
     - name: Get semver-tags
       run: |
-        go install github.com/catalystcommunity/semver-tags@latest
+        go install github.com/catalystcommunity/semver-tags@v0.6.2
         semver-tags -h
     - name: Semver Tags
       id: semver-tags
       run: |
-        semver-tags run --dry_run --github_action | yq -P -o=json "."
+        semver-tags run --dry_run --github_action --skip-short-versions | yq -P -o=json "."
     - name: tags-output
       run: |
         echo "new_release_published: ${{ steps.semver-tags.outputs.new_release_published }}" || true
